@@ -17,7 +17,7 @@ const calma = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fin = () => { html.classList.add('listo'); };
   if (!html.classList.contains('con-intro') || !el) { fin(); return; }
   const t0 = performance.now();
-  const minimo = innerWidth < 900 ? 1180 : 1480;          // celu ≤ 1,8 s en total · desktop ≈ 2,1 s
+  const minimo = innerWidth < 900 ? 1050 : 1400;          // + 0,32 s de salida + persiana: celu ≈ 1,8 s · desktop ≈ 2,3 s
   const heroImg = $('.ventana__foto img');
   const espera = Promise.all([
     document.fonts?.ready || Promise.resolve(),
@@ -27,10 +27,13 @@ const calma = matchMedia('(prefers-reduced-motion: reduce)').matches;
   Promise.race([espera, tope]).then(() => {
     const falta = Math.max(0, minimo - (performance.now() - t0));
     setTimeout(() => {
-      el.classList.add('is-fin');
-      html.classList.remove('con-intro');            // libera el scroll
-      setTimeout(fin, 180);
-      setTimeout(() => el.remove(), 700);
+      el.classList.add('is-sale');                     // el logo se va y aparecen las tablillas de la persiana
+      html.classList.remove('con-intro');              // libera el scroll (la intro sigue visible por .is-sale)
+      setTimeout(() => {
+        el.classList.add('is-fin');                    // la persiana sube
+        fin();                                         // la web entra a la vez que sube la persiana
+        setTimeout(() => el.remove(), 900);
+      }, 320);
     }, falta);
   });
 })();
@@ -219,9 +222,9 @@ $$('[data-ir-cat]').forEach(a => a.addEventListener('click', () => irCategoria(a
 const lb = $('.lb');
 function lightbox(src, nombre) {
   $('img', lb).src = src; $('img', lb).alt = nombre || ''; $('figcaption', lb).textContent = nombre || '';
-  lb.hidden = false; bloquear(true); $('.tk__x', lb).focus();
+  lb.hidden = false; html.classList.add('lb-abierto'); bloquear(true); $('.tk__x', lb).focus();
 }
-function cerrarLb() { lb.hidden = true; bloquear(false); }
+function cerrarLb() { if (lb.hidden) return; lb.hidden = true; html.classList.remove('lb-abierto'); bloquear(false); }
 lb.addEventListener('click', (e) => { if (e.target.closest('[data-lb-cerrar]')) cerrarLb(); });
 
 let scrollGuardado = 0, bloqueos = 0;
@@ -349,7 +352,7 @@ pintarVaso(kit.carrito.casillas.includes('vaso'));
   let x0 = 0, y0 = 0, dx = 0, activa = null, id = null;
   el.addEventListener('pointerdown', (e) => {
     const top = orden[0]; if (!e.target.closest('figure') || e.target.closest('figure') !== top) return;
-    activa = top; id = e.pointerId; x0 = e.clientX; y0 = e.clientY; dx = 0; top.style.transition = 'none'; top.setPointerCapture(id);
+    activa = top; id = e.pointerId; x0 = e.clientX; y0 = e.clientY; dx = 0; top.style.transition = 'none'; try { top.setPointerCapture(id); } catch (_) {}
   });
   el.addEventListener('pointermove', (e) => {
     if (!activa || e.pointerId !== id) return;
@@ -404,7 +407,7 @@ function pintarAbierto() {
   else if (e.abre) { corto = `Abrimos a las ${h12(e.abre)} hs`; largo = `Cerrado ahora · abrimos hoy a las ${h12(e.abre)} hs`; }
   else { const p = proximaApertura(); corto = p ? `Abrimos ${p.dia} a las ${p.hora} hs` : 'Cerrado'; largo = p ? `Cerrado ahora · abrimos ${p.dia} a las ${p.hora} hs` : 'Cerrado'; }
   $$('[data-abierto]').forEach(el => { el.classList.toggle('is-cerrado', !e.abierto); $('span', el).textContent = corto; });
-  $$('[data-abierto-largo]').forEach(el => { el.classList.toggle('is-cerrado', !e.abierto); $('span', el).textContent = largo; });
+  $$('[data-abierto-largo]').forEach(el => { el.classList.toggle('is-cerrado', !e.abierto); $('span', el).textContent = largo.replace(/ a las (\S+) hs$/, '\u00a0a\u00a0las\u00a0$1\u00a0hs'); });
   const d = DIAS[new Date(kit.hoy() + 'T12:00:00Z').getUTCDay()];
   $$('[data-horas] li').forEach(li => li.classList.toggle('is-hoy', li.dataset.dia === d));
 }

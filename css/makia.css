@@ -68,15 +68,23 @@ button { font: inherit; color: inherit; }
    INTRO: baja el toldo, se arma el logo, cae la gota, sube la persiana
    ========================================================= */
 .intro { display: none; }
-.con-intro .intro { display: grid; place-items: center; position: fixed; inset: 0; z-index: 10000; background: var(--negro); animation: intro-seguro 0s linear 5s forwards; transition: transform .6s var(--ease-o); }
+.con-intro .intro, .intro.is-sale { display: grid; place-items: center; position: fixed; inset: 0; z-index: 10000; background: var(--negro); animation: intro-seguro 0s linear 5s forwards; will-change: transform; }
 .con-intro body { overflow: hidden; }
 .intro__toldo { position: absolute; left: 0; right: 0; top: 0; height: calc(var(--toldo-p) * 1.4 + var(--feston)); transform: translateY(-101%); animation: intro-toldo .5s var(--ease) .05s forwards; display: flex; flex-direction: column; }
 .intro__toldo .toldo { flex: 1; }
-.intro__logo { position: relative; width: clamp(112px, 26vw, 150px); }
+.intro__logo { position: relative; width: clamp(112px, 26vw, 150px); transition: transform .45s var(--ease-o), opacity .35s; }
 .intro__logo img { width: 100%; height: auto; clip-path: inset(0 0 100% 0); animation: intro-logo .75s var(--ease-o) .35s forwards; }
 .intro__gota { position: absolute; left: 50%; top: 45.8%; width: 7%; aspect-ratio: 5 / 7; margin-left: -3.5%; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: var(--rojo); opacity: 0; animation: intro-gota .38s cubic-bezier(.55,0,1,.45) 1.05s forwards; }
-.intro.is-fin { transform: translateY(-102%); }
-.intro.is-fin::after { content: ""; position: absolute; left: 0; right: 0; bottom: -18px; height: 18px; background: repeating-linear-gradient(90deg, #2a2926 0 4px, transparent 4px 9px); }
+/* SALIDA: el logo se achica y se va, aparecen las tablillas y la persiana sube dejando ver la web */
+.intro::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(246,243,236,.07) 0 2px, transparent 2px 22px); opacity: 0; transition: opacity .3s; pointer-events: none; }
+.intro::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 26px; background: linear-gradient(#2a2926, #1d1c1a); border-top: 2px solid #3a3935; box-shadow: 0 14px 26px rgba(0,0,0,.45); transform: translateY(100%); transition: transform .3s var(--ease); }
+.intro.is-sale .intro__logo { transform: translateY(-14px) scale(.9); opacity: 0; }
+.intro.is-sale .intro__toldo { transition: transform .4s var(--ease-o); transform: translateY(-101%); animation: none; }
+.intro.is-sale::before { opacity: 1; }
+.intro.is-sale::after { transform: translateY(0); }
+.intro.is-fin { transform: translateY(calc(-100% - 40px)); transition: transform .75s cubic-bezier(.7,0,.25,1); }
+.listo .hero { animation: web-entra .9s var(--ease) both; }
+@keyframes web-entra { from { transform: translateY(26px); } }
 @keyframes intro-toldo { 70% { transform: translateY(4%); } to { transform: none; } }
 @keyframes intro-logo { to { clip-path: inset(0 0 0 0); } }
 @keyframes intro-gota { 0% { opacity: 1; transform: translateY(0) scale(.6); } 100% { opacity: 0; transform: translateY(260%) scale(1); } }
@@ -640,3 +648,18 @@ a.dato:hover { border-color: var(--negro); }
 .kit-line__img--na { background: var(--negro) url(../img/icono-crema.svg) center / 38% no-repeat; }
 @media (max-width: 1023px) { .kit-demo-pill { transition: opacity .35s, transform .35s var(--ease); } .pill-fuera .kit-demo-pill { opacity: 0 !important; transform: translateY(20px) !important; pointer-events: none; } }
 .kit-tag--veggie { color: var(--turq); }
+
+/* celu/tablet: el pedido es una barra fija abajo (no tapa los botones de "Sumar" de la derecha) */
+@media (max-width: 1023px) {
+  .kit-fab { left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); min-height: 60px; padding: .5rem 1.1rem .5rem .55rem; gap: .75rem; }
+  .kit-fab__txt { flex: 1; flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; }
+  .kit-fab__total { font-size: 1.05rem; }
+  .kit-fab__total::after { content: "  →"; white-space: pre; opacity: .8; }
+  .kit-fab__n { top: -8px; left: -6px; }
+  html.kit-has-cart body { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+  html.kit-has-cart { scroll-padding-bottom: 96px; }
+  html.kit-has-cart .kit-demo-pill { bottom: calc(max(12px, env(safe-area-inset-bottom)) + 74px) !important; }
+}
+.lb-abierto .kit-fab, .lb-abierto .kit-demo-pill { opacity: 0 !important; pointer-events: none; }
+.donde__estado { align-items: baseline; } .donde__estado i { flex: none; top: -1px; }
+@media (max-width: 1023px) { .pie { padding-bottom: calc(84px + env(safe-area-inset-bottom)); } }
