@@ -267,8 +267,8 @@ button { font: inherit; color: inherit; }
 .it__side { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
 .it__precio { font-weight: 600; font-size: 16px; white-space: nowrap; }
 .carta .kit-add { min-height: 44px; min-width: 88px; padding: 0 16px; border-radius: 999px; border: 0; background: var(--rojo); color: #fff; font: 600 15px/1 var(--f-txt); }
-.carta .kit-step, .boxes .kit-step, .postal .kit-step { border-radius: 999px; background: var(--negro); border-color: var(--negro); }
-.carta .kit-step button, .boxes .kit-step button, .postal .kit-step button { width: 44px; height: 44px; }
+.carta .kit-step, .boxes .kit-step { border-radius: 999px; background: var(--negro); border-color: var(--negro); }
+.carta .kit-step button, .boxes .kit-step button { width: 44px; height: 44px; }
 .taza-cap { width: 34px; height: 30px; border: 2.4px solid var(--negro); border-top: 0; border-radius: 0 0 15px 15px; display: flex; flex-direction: column-reverse; overflow: hidden; flex: none; margin: 0 6px 0 2px; position: relative; }
 .taza-cap span { display: block; flex: none; }
 .carta__nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 24px; }
@@ -338,48 +338,52 @@ button { font: inherit; color: inherit; }
    ========================================================= */
 .cordi { overflow: clip; }
 .cordi .t2 { color: var(--espuma); }
-.cordi__scroll { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; outline: 0; }
-.cordi__scroll::-webkit-scrollbar { display: none; }
-.cordi__mapa { position: relative; width: 1100px; height: 270px; margin: 0; }
+/* el mapa entra entero en la pantalla: nada de scroll para usarlo; la tarjeta aparece en la cumbre */
+.cordi__mapa { position: relative; height: 300px; margin-top: 4px; --cielo: 190px; }
+.cordi__cielo { position: absolute; left: 0; right: 0; top: 0; height: var(--cielo); }
 .cordi__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .cordi__linea { fill: none; stroke: var(--espuma); stroke-width: 2.4; stroke-linejoin: round; vector-effect: non-scaling-stroke; stroke-dasharray: 4000; stroke-dashoffset: 4000; transition: stroke-dashoffset 2.4s var(--ease-o); }
 .cordi.visto .cordi__linea { stroke-dashoffset: 0; }
-.cordi__sol { fill: none; stroke: var(--espuma); stroke-width: 1; opacity: .18; vector-effect: non-scaling-stroke; }
+.cordi__sol { fill: none; stroke: var(--espuma); stroke-width: 1; opacity: .16; vector-effect: non-scaling-stroke; }
 .cordi__nieve { fill: var(--espuma); opacity: 0; transition: opacity .8s 1.6s; }
 .cordi.visto .cordi__nieve { opacity: .9; }
-.cumbre { position: absolute; transform: translate(-50%, calc(-100% + 9px)); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 8px 0; border: 0; background: none; color: var(--espuma); cursor: pointer; scroll-snap-align: center; min-width: 64px; min-height: 64px; opacity: 0; transition: opacity .5s var(--ease); }
-.cordi.visto .cumbre { opacity: 1; transition-delay: calc(1.1s + var(--i) * 120ms); }
-.cumbre__n { font: 600 12.5px/1 var(--f-eti); letter-spacing: .18em; text-transform: uppercase; white-space: nowrap; padding: 6px 10px; border-radius: 999px; transition: background .25s, color .25s; }
-.cumbre__p { position: relative; width: 16px; height: 16px; border-radius: 50%; background: var(--espuma); transition: transform .3s var(--ease), background .3s; }
-.cumbre__p::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--rojo); opacity: 0; }
-.cumbre.is-on .cumbre__n { background: var(--rojo); color: #fff; }
-.cumbre.is-on .cumbre__p { background: var(--rojo); transform: scale(1.35); }
+.cordi__cumbres { position: absolute; inset: 0; }
+.cumbre { position: absolute; width: 48px; height: 48px; margin: -24px 0 0 -24px; padding: 0; border: 0; background: none; color: var(--espuma); cursor: pointer; display: grid; place-items: center; opacity: 0; transform: scale(.4); transition: opacity .5s var(--ease), transform .5s var(--ease); touch-action: manipulation; }
+.cordi.visto .cumbre { opacity: 1; transform: none; transition-delay: calc(1.1s + var(--i) * 110ms); }
+.cumbre__p { position: relative; width: 18px; height: 18px; border-radius: 50%; background: var(--espuma); border: 3px solid var(--negro); box-shadow: 0 0 0 2px var(--espuma); transition: transform .3s var(--ease), background .3s; }
+.cumbre__p::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; background: var(--rojo); opacity: 0; }
+.cumbre__n { position: absolute; bottom: calc(100% - 4px); left: 50%; transform: translateX(-50%); white-space: nowrap; font: 600 12px/1 var(--f-eti); letter-spacing: .16em; text-transform: uppercase; padding: 6px 9px; border-radius: 999px; pointer-events: none; transition: background .25s, color .25s; }
+.cumbre.is-on .cumbre__p { background: var(--rojo); box-shadow: 0 0 0 2px var(--rojo); transform: scale(1.25); }
 .cumbre.is-on .cumbre__p::after { animation: latido 2s infinite; }
-.postal { margin-top: 18px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; background: #1F1E1C; border: 1px solid #34332F; border-radius: 20px; overflow: hidden; }
-.postal__foto { aspect-ratio: 4 / 3; overflow: hidden; background: #2a2926; }
-.postal__foto img { width: 100%; height: 100%; object-fit: cover; transition: opacity .3s, transform .6s var(--ease); }
-.postal.is-cambia .postal__foto img { opacity: 0; transform: scale(1.04); }
-.postal.is-cambia .postal__txt > * { opacity: 0; transform: translateY(8px); }
-.postal__txt { padding: 24px 22px 24px; display: flex; flex-direction: column; }
-.postal__txt > * { transition: opacity .3s, transform .4s var(--ease); }
-.postal__t { margin: 0; font: 600 clamp(36px, 9vw, 52px)/1 var(--f-tit); color: var(--espuma); }
-.postal__d { margin: 12px 0 0; color: #D8D3C8; font-size: 16px; line-height: 1.6; }
-.postal__pie { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 22px; }
-.postal__precio { font-size: 20px; color: var(--espuma); }
-.postal .kit-add { min-height: 48px; padding: 0 22px; border-radius: 999px; border: 0; background: var(--rojo); color: #fff; font: 600 16px/1 var(--f-txt); }
+.cumbre.is-on .cumbre__n { background: var(--rojo); color: #fff; }
+@media (max-width: 899px) { .cumbre__n { display: none; } .cumbre.is-on .cumbre__n { display: block; } }
+/* tarjeta del sándwich, anclada a la cumbre activa */
+.cumbre-pop { position: absolute; left: var(--x, 16px); top: var(--y, 200px); width: min(340px, 100%); display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; background: var(--espuma); color: var(--negro); border-radius: 16px; padding: 12px; box-shadow: 0 24px 44px -18px rgba(0,0,0,.7); z-index: 3; transition: left .35s var(--ease), top .35s var(--ease), opacity .3s; }
+.cumbre-pop.is-cambia .cumbre-pop__foto img, .cumbre-pop.is-cambia .cumbre-pop__txt { opacity: 0; }
+.cumbre-pop__flecha { position: absolute; top: -8px; left: var(--fx, 40px); width: 16px; height: 16px; margin-left: -8px; background: var(--espuma); transform: rotate(45deg); border-radius: 3px; transition: left .35s var(--ease); }
+.cumbre-pop__foto { width: 96px; height: 96px; border-radius: 10px; overflow: hidden; background: #E9E5DC; }
+.cumbre-pop__foto img { width: 100%; height: 100%; object-fit: cover; transition: opacity .25s; }
+.cumbre-pop__txt { min-width: 0; display: flex; flex-direction: column; transition: opacity .25s; }
+.cumbre-pop__t { margin: 0; font: 600 24px/1 var(--f-tit); }
+.cumbre-pop__d { margin: 5px 0 0; font-size: 13.5px; line-height: 1.4; color: var(--texto2); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.cumbre-pop__pie { margin-top: auto; padding-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.cumbre-pop__precio { font-size: 16px; }
+.cumbre-pop .kit-add { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 0; background: var(--rojo); color: #fff; font: 600 15px/1 var(--f-txt); }
+.cumbre-pop .kit-step { border-radius: 999px; background: var(--negro); border-color: var(--negro); }
+.cumbre-pop .kit-step button { width: 40px; height: 40px; }
+.js .cumbre-pop { opacity: 0; }
+.cordi.visto .cumbre-pop { opacity: 1; transition-delay: 0s, 0s, 1.7s; }
 .cordi__mas { margin: 26px 0 0; color: #BDB8AE; font-size: 15.5px; line-height: 1.6; }
 .cordi__mas a { color: var(--crema); font-weight: 600; }
 @media (min-width: 900px) {
-  .cordi__scroll { overflow: visible; }
-  .cordi__mapa { width: min(100%, calc(var(--max) + 2 * var(--pad))); height: clamp(260px, 26vw, 360px); margin: 0 auto; }
-  .cumbre { min-width: 80px; }
+  .cordi__mapa { height: 360px; --cielo: 300px; }
+  .cumbre-pop { width: 380px; grid-template-columns: 120px minmax(0, 1fr); padding: 14px; gap: 16px; }
+  .cumbre-pop__foto { width: 120px; height: 120px; }
+  .cumbre-pop__t { font-size: 28px; }
+  .cumbre-pop__d { font-size: 14.5px; }
+  .cumbre__n { font-size: 13.5px; }
   .cumbre:hover .cumbre__n { background: var(--espuma); color: var(--negro); }
   .cumbre.is-on:hover .cumbre__n { background: var(--rojo); color: #fff; }
-  .cumbre__n { font-size: 14px; }
-  .postal { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); margin-top: 30px; }
-  .postal__foto { aspect-ratio: auto; min-height: 380px; }
-  .postal__txt { padding: 48px 52px; justify-content: center; }
-  .postal__d { font-size: 18px; max-width: 46ch; }
 }
 
 /* =========================================================

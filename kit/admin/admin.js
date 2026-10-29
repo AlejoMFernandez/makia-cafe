@@ -25,6 +25,7 @@ import { paginasCarta, HOJA } from '../core/carta-impresa.js';
 import { filtrarCarta } from '../core/temporadas.js';
 import { destacadosDe } from '../core/destacados.js';
 import { panelEstadias } from './estadias.js';
+import { panelCanchas } from './canchas.js';
 
 const ACTIVOS = ['pendiente', 'confirmado', 'listo'];
 const PAGADO = ['aprobado', 'cobrado'];
@@ -43,6 +44,7 @@ export async function initAdmin(opts = {}) {
 
   const vistas = [
     config.modulos.carrito && { id: 'pedidos', icono: '<path d="M5 8h14l-1.3 11.1a2 2 0 0 1-2 1.9H8.3a2 2 0 0 1-2-1.9L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>' },
+    config.modulos.canchas && { id: 'canchas', icono: '<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M12 4v16M3 12h18"/><circle cx="12" cy="12" r="2.6"/>' },
     config.modulos.estadias && { id: 'estadias', icono: '<path d="M3 18V8M3 14h18v4M21 18v-6a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/>' },
     config.modulos.reservas && { id: 'reservas', icono: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>' },
     config.modulos.carta && { id: 'carta', icono: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6"/>' },
@@ -71,6 +73,7 @@ export async function initAdmin(opts = {}) {
   };
   let pendientesAntes = null;
   let PE = null;   // panel de estadías (se crea al entrar)
+  let PC = null;   // panel de canchas
   const yaVistos = new Set(); let tableroVisto = false;
 
   // ---------- login
@@ -218,6 +221,10 @@ export async function initAdmin(opts = {}) {
       $('.kad-switch__txt', fila).textContent = e.target.checked ? t('hay') : t('noHay');
       marcarGuardado(fila);
     }
+    if (e.target.matches('[data-stock-n]')) {
+      const v = String(e.target.value).trim(); const q = v === '' ? null : Math.max(0, parseInt(v.replace(/\D/g, ''), 10) || 0);
+      await store.saveProducto({ ...p, stock: q }); pintarStock(fila, { ...p, stock: q }); marcarGuardado(fila); return;
+    }
     if (e.target.matches('[data-precio]')) {
       const v = parsePrecio(e.target.value);
       await store.saveProducto({ ...p, precio: v });
@@ -231,6 +238,12 @@ export async function initAdmin(opts = {}) {
     // "31.500" / "31500" / "31,5" según el país
     const limpio = ctx.pais.decimales ? s.replace(/\./g, '').replace(',', '.') : s.replace(/[.,\s]/g, '');
     const n = Number(limpio.replace(/[^\d.]/g, '')); return Number.isFinite(n) ? n : null;
+  }
+  function pintarStock(fila, p) {
+    const q = ctx.stockDe(p); const box = $('.kad-stock', fila); if (!box) return;
+    $('[data-stock-n]', box).value = q == null ? '' : q;
+    $('[data-stock="-1"]', box).disabled = !q;
+    box.classList.toggle('is-cero', q === 0); fila.classList.toggle('is-off', p.disponible === false || q === 0);
   }
   function marcarGuardado(fila) {
     const ok = $('.kad-ok', fila); if (!ok) return;
@@ -363,7 +376,7 @@ export async function initAdmin(opts = {}) {
         <b class="kad-code">${esc(p.codigo)}</b>
         <time class="kad-reloj${urg}" datetime="${esc(p.creado)}">${esc(relativo(p.creado))}</time>
       </header>
-      ${p.retiro?.fecha ? `<p class="kad-retiro${p.retiro.fecha === hoy() ? ' is-hoy' : p.retiro.fecha < hoy() ? ' is-vencido' : ''}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>${esc(t('retira', { cuando: textoRetiro(p.retiro, { dias: t('dias'), hoy: hoy(), asapTexto: t('asapTexto') }) }))}</span></p>` : ''}
+      ${p.retiro?.fecha ? `<p class="kad-retiro${p.retiro.fecha === hoy() ? ' is-hoy' : p.retiro.fecha < hoy() ? ' is-vencido' : ''}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>${esc(t(p.tipo === 'delivery' ? 'llega' : 'retira', { cuando: textoRetiro(p.retiro, { dias: t('dias'), hoy: hoy(), asapTexto: t('asapTexto') }) }))}</span></p>` : ''}
       <div class="kad-chips">${chipPago(p)}<span class="kad-chip">${esc(delivery ? t('chipDelivery') : t('chipRetiro'))}</span>${p.sucursal ? `<span class="kad-chip kad-chip--sede">${esc(p.sucursal.nombre)}</span>` : ''}</div>
       <ul class="kad-items">${(p.items || []).map(i => `<li><b>${i.cant} ×</b> <span>${esc(i.nombre)}${i.detalle ? ` <em>${esc(i.detalle)}</em>` : ''}${i.precio == null && (p.items || []).some(x => x.precio != null) ? ` <small class="kad-sinprecio">${esc(t('aConfirmar'))}</small>` : ''}${i.nota ? `<em>${esc(i.nota)}</em>` : ''}</span></li>`).join('')}</ul>
       ${(p.ajustes || []).length ? `<p class="kad-note kad-note--ajuste">${p.ajustes.map(a => `<b>✔ ${esc(a.nombre)}</b>${a.monto ? ` · −${esc(ctx.money(a.monto))}` : ''}`).join('<br>')}</p>` : ''}
@@ -597,6 +610,18 @@ export async function initAdmin(opts = {}) {
       const ed = e.target.closest('[data-editar]');
       if (ed) return editorProducto(prods.find(p => p.id === ed.closest('[data-prod]').dataset.prod), cats, prods);
       if (e.target.closest('[data-importar]')) { await store.importarCarta(); toast(t('guardado')); return render(); }
+      if (e.target.closest('[data-cargar-stock]')) {
+        if (!(await confirmar(t('cargarStockSeguro'), { ok: t('cargarStock') }))) return;
+        if (store.cargarStock) await store.cargarStock();
+        else for (const p of await store.getProductos()) if (p.stockBase != null && p.stockBase !== '') await store.saveProducto({ ...p, stock: Number(p.stockBase) });
+        toast(t('cargarStockOk')); return render();
+      }
+      const sb = e.target.closest('[data-stock]');
+      if (sb) {
+        const fila = sb.closest('[data-prod]'); const lista = await store.getProductos(); const p = lista.find(x => x.id === fila.dataset.prod); if (!p) return;
+        const q = Math.max(0, (ctx.stockDe(p) ?? 0) + Number(sb.dataset.stock));
+        await store.saveProducto({ ...p, stock: q }); pintarStock(fila, { ...p, stock: q }); marcarGuardado(fila); return;
+      }
       const tb = e.target.closest('[data-temp]');
       if (tb && store.setTemporada) {
         if (tb.getAttribute('aria-pressed') === 'true') return;
@@ -652,24 +677,34 @@ export async function initAdmin(opts = {}) {
             <details class="kad-mas"><summary aria-label="${esc(t('masOpciones'))}">…</summary><button type="button" class="kad-mas__b" data-cat-borrar>${esc(t('borrarSeccion'))}</button></details>
           </div>` : ''}`}
         <span class="kad-vivo">${esc(t('alInstante'))}</span>
+        ${STOCK ? `<button type="button" class="kit-btn kit-btn--ghost" data-cargar-stock>↻ ${esc(t('cargarStock'))}</button>` : ''}
         <button type="button" class="kit-btn" data-nuevo-prod="${esc(cat?.id || '')}">+ ${esc(t('agregarPlato'))}</button>
       </div>
-      ${lista.length ? `<div class="kad-prods-head" aria-hidden="true"><span></span><span>${esc(t('plato'))}</span><span>${esc(CC.sinPrecio ? (CAMPOS.find(c => c.id === CC.campoFila)?.label || '') : t('precio'))}</span><span>${esc(t('hayHoy'))}</span><span></span></div>
+      ${lista.length ? `<div class="kad-prods-head" aria-hidden="true"><span></span><span>${esc(t('plato'))}</span><span>${esc(CC.sinPrecio ? (CAMPOS.find(c => c.id === CC.campoFila)?.label || '') : t('precio'))}</span><span>${esc(STOCK ? t('stockHoy') : t('hayHoy'))}</span><span></span></div>
       <ul class="kad-prods">${lista.map(p => filaProducto(p, q ? nombreCat(p.categoria) : '')).join('')}</ul>` : `<div class="kit-empty"><p>${esc(q ? t('nadaAca') : t('seccionVacia'))}</p></div>`}
       ${!q && cat && !CC.sinPrecio && lista.some(p => p.precio != null || tieneVariantes(p)) ? `<div class="kad-pct"><b>${esc(t('subirPrecios'))}</b>
         <button type="button" class="kad-mini kad-mini--ghost" data-pct="5">+ 5%</button><button type="button" class="kad-mini kad-mini--ghost" data-pct="10">+ 10%</button><button type="button" class="kad-mini kad-mini--ghost" data-pct="otro">${esc(t('otroPct'))}</button>
         <span class="kad-muted">${esc(t('redondea', { n: ctx.money(Number(red)) }))}</span></div>` : ''}`;
   }
 
+  // stock del día (kit 1.13): − n + en el renglón; vacío = sin límite
+  function stockHTML(p) {
+    const q = ctx.stockDe(p);
+    return `<div class="kad-stock${q === 0 ? ' is-cero' : ''}" role="group" aria-label="${esc(t('stockHoy'))} ${esc(p.nombre)}">
+      <button type="button" data-stock="-1" aria-label="−" ${q ? '' : 'disabled'}>−</button>
+      <input type="text" inputmode="numeric" data-stock-n value="${q == null ? '' : q}" placeholder="∞" aria-label="${esc(t('stockHoy'))}">
+      <button type="button" data-stock="1" aria-label="+">+</button></div>`;
+  }
+
   function filaProducto(p, catTxt = '') {
     const ph = ctx.pedible(p) && p.precio == null ? t('aConfirmar') : t('sinPrecio');
-    return `<li class="kad-prod${p.disponible === false ? ' is-off' : ''}" data-prod="${esc(p.id)}">
+    return `<li class="kad-prod${p.disponible === false || ctx.agotado(p) ? ' is-off' : ''}" data-prod="${esc(p.id)}">
           <button type="button" class="kad-prod__img" data-editar aria-label="${esc(t('editar'))} ${esc(p.nombre)}">${p.foto ? `<img src="${esc(ctx.asset(p.foto))}" alt="" loading="lazy" decoding="async">` : `<span>${esc(t('fotoAgregar'))}</span>`}</button>
           <button type="button" class="kad-prod__main" data-editar><b>${esc(p.nombre)}</b>${catTxt ? `<small class="kad-prod__cat">${esc(catTxt)}</small>` : ''}${p.descripcion ? `<span>${esc(p.descripcion)}</span>` : ''}</button>
           ${CC.sinPrecio ? `<button type="button" class="kad-precio kad-precio--var" data-editar>${esc((CC.campoFila && p[CC.campoFila]) || '—')}</button>`
             : tieneVariantes(p) ? `<button type="button" class="kad-precio kad-precio--var" data-editar>${esc(p.variantes.map(v => `${v.nombre} ${ctx.money(v.precio) || '—'}`).join(' · '))}</button>`
             : `<label class="kad-precio"><span aria-hidden="true">${esc(ctx.pais.simbolo || '$')}</span><input type="text" inputmode="decimal" data-precio value="${p.precio != null ? esc(formatoNumero(p.precio)) : ''}" placeholder="${esc(ph)}" aria-label="${esc(t('precio'))} ${esc(p.nombre)}"></label>`}
-          <label class="kad-switch"><input type="checkbox" data-disp ${p.disponible !== false ? 'checked' : ''}><span class="kad-switch__ui" aria-hidden="true"></span><span class="kad-switch__txt">${esc(p.disponible !== false ? t('hay') : t('noHay'))}</span></label>
+          ${STOCK ? stockHTML(p) : `<label class="kad-switch"><input type="checkbox" data-disp ${p.disponible !== false ? 'checked' : ''}><span class="kad-switch__ui" aria-hidden="true"></span><span class="kad-switch__txt">${esc(p.disponible !== false ? t('hay') : t('noHay'))}</span></label>`}
           <span class="kad-prod__fin"><span class="kad-ok" aria-live="polite">${esc(t('guardadoOk'))}</span><button type="button" class="kad-mini kad-mini--ghost" data-editar>${esc(t('editar'))}</button></span>
         </li>`;
   }
@@ -759,6 +794,7 @@ export async function initAdmin(opts = {}) {
   //              "sinPrecio": true, "sinEtiquetas": true, "campoFila": "funciones" }
   const CC = config.carta || {};
   const CAMPOS = Array.isArray(CC.campos) ? CC.campos : [];
+  const STOCK = !!CC.stock;
   function camposExtraHTML(p0) {
     return CAMPOS.map(c => {
       const v = p0[c.id];
@@ -793,6 +829,9 @@ export async function initAdmin(opts = {}) {
         <label class="kit-field"><span>${esc(t('categoria'))}</span><select name="categoria">${cats.map(c => `<option value="${esc(c.id)}" ${c.id === p0.categoria ? 'selected' : ''}>${esc(c.nombre)}</option>`).join('')}<option value="" ${!p0.categoria ? 'selected' : ''}>${esc(t('sinCategoria'))}</option></select></label>
       </div>
       <label class="kit-field"><span>${esc(t('descripcion'))}</span><textarea name="descripcion" rows="${CC.sinPrecio ? 6 : 3}" maxlength="${CC.descripcionMax || 400}">${esc(p0.descripcion)}</textarea></label>
+      ${STOCK ? `<div class="kit-field-row"><label class="kit-field"><span>${esc(t('stockBase'))}</span><input name="stockBase" type="number" inputmode="numeric" min="0" step="1" value="${p0.stockBase ?? ''}" placeholder="${esc(t('sinLimite'))}"></label>
+        <label class="kit-field"><span>${esc(t('stockHoy'))}</span><input name="stock" type="number" inputmode="numeric" min="0" step="1" value="${p0.stock ?? ''}" placeholder="${esc(t('sinLimite'))}"></label></div>
+        <p class="kad-muted">${esc(t('stockBaseAyuda'))}</p>` : ''}
       ${camposExtraHTML(p0)}
       ${CC.sinEtiquetas ? '<input name="etiquetas" type="hidden" value="">' : `<label class="kit-field"><span>${esc(t('etiquetas'))}</span><input name="etiquetas" value="${esc((p0.etiquetas || []).join(', '))}" placeholder="picante, veggie, casa, nuevo"></label>`}
       <label class="kit-check"><input type="checkbox" name="disponible" ${p0.disponible !== false ? 'checked' : ''}><span>${esc(t('disponible'))}</span></label>
@@ -832,6 +871,7 @@ export async function initAdmin(opts = {}) {
           etiquetas: f.etiquetas.value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean),
           disponible: f.disponible.checked, foto, orden: prod?.orden ?? (Math.max(0, ...enCat.map(x => x.orden || 0)) + 1),
           ...leerCamposExtra(f),
+          ...(STOCK ? { stockBase: f.stockBase.value === '' ? null : Number(f.stockBase.value), stock: f.stock.value === '' ? null : Number(f.stock.value) } : {}),
         });
         if (!prod) st.cat = f.categoria.value || '_sin';
         pop.close(); toast(t('guardado')); render();
@@ -1249,10 +1289,11 @@ export async function initAdmin(opts = {}) {
     const nr = ress.filter(r => r.estado === 'pendiente' && r.fecha >= hoy()).length;
     const set = (k, n) => { const el = $(`[data-count="${k}"]`, root); if (el) { el.textContent = n; el.hidden = !n; } };
     const ne = ests.filter(e => e.estado === 'pendiente' && e.salida >= hoy() && e.origen !== 'bloqueo').length;
-    set('pedidos', np); set('reservas', nr); set('estadias', ne);
+    const nc = config.modulos.canchas ? (await store.getTurnosCancha()).filter(x => x.estado === 'pendiente' && x.origen === 'web' && x.fecha >= hoy()).length : 0;
+    set('pedidos', np); set('reservas', nr); set('estadias', ne); set('canchas', nc);
     if (pendientesAntes != null && np > pendientesAntes && pref.sonido) beep();
     pendientesAntes = np;
-    document.title = `${np + nr + ne ? `(${np + nr + ne}) ` : ''}${t('panel')} · ${config.nombre}`;
+    document.title = `${np + nr + ne + nc ? `(${np + nr + ne + nc}) ` : ''}${t('panel')} · ${config.nombre}`;
   }
 
   async function render() {
@@ -1263,6 +1304,7 @@ export async function initAdmin(opts = {}) {
     main.onclick = null; main.onsubmit = null; main.oninput = null; main.onchange = null;
     try {
       if (vista === 'pedidos') await vistaPedidos(main);
+      else if (vista === 'canchas') { PC = PC || panelCanchas(ctx, { hoy, render }); await PC.vista(main); }
       else if (vista === 'estadias') { PE = PE || panelEstadias(ctx, { hoy, render }); await PE.vista(main); }
       else if (vista === 'reservas') await vistaReservas(main);
       else if (vista === 'carta') await vistaCarta(main);

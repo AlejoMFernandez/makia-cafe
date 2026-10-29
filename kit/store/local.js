@@ -3,6 +3,7 @@
 // Se siembra con la carta de cliente.json y se puede reiniciar desde el panel.
 import { uid, clone, codigoCorto } from '../core/util.js';
 import { armarPedido } from '../core/pedidos.js';
+import { faltantes, cantidadesPorProducto, ocupacionFranjas, stockDe } from '../core/stock.js';
 import { tieneVariantes } from '../core/variantes.js';
 import { configReservas, serviciosDe, tandaDe, usadosEn, capacidadEn } from '../core/turnos.js';
 import { temporadaValida } from '../core/temporadas.js';
@@ -10,6 +11,7 @@ import { descuentoEfectivo } from '../core/descuentos.js';
 import { configEstadias, ocupacionDemo, libre, nochesEntre, cotizar, ACTIVA } from '../core/estadias.js';
 import { ahoraEn } from '../core/turnos.js';
 import { mezclarDestacados } from '../core/destacados.js';
+import { configCanchas, ocupacionDemo as ocupacionDemoCanchas, abonosDemo, ocupacionDia, libre as canchaLibre, ACTIVO as TURNO_ACTIVO, cotizar as cotizarCancha, tarifasDe as tarifasCanchas, ocupaDe, deporteDe } from '../core/canchas.js';
 import { configGiftcards, codigoGiftcard, normalizarCodigo, estadoGiftcard, canjeable, venceDesde } from '../core/giftcards.js';
 
 const VERSION = 1;
@@ -26,12 +28,18 @@ export function createLocalStore(config) {
       productos: (c.productos || []).map((x, i) => ({ disponible: true, etiquetas: [], descripcion: '', orden: i + 1, ...x })),
       temporada: temporadaValida(config, null), reservas: [], pedidos: [], giftcards: [], sembrado: new Date().toISOString(),
       ...(config.modulos?.estadias ? semillaEstadias() : {}),
+      ...(config.modulos?.canchas ? semillaCanchas() : {}),
     };
   }
   function semillaEstadias() {
     const E = configEstadias(config);
     return { estadias: config.estadias?.demoOcupacion === false ? [] : ocupacionDemo(E, ahoraEn(config.zonaHoraria || 'America/Argentina/Buenos_Aires').fecha),
       tarifas: clone({ ...E.tarifas, sena: E.sena, minNoches: E.minNoches }) };
+  }
+  function semillaCanchas() {
+    const C = configCanchas(config); const now = ahoraEn(config.zonaHoraria || 'America/Argentina/Buenos_Aires');
+    const abonos = config.canchas?.demoOcupacion === false ? [] : abonosDemo(C);
+    return { turnosCancha: config.canchas?.demoOcupacion === false ? [] : ocupacionDemoCanchas(C, config.horarios, now.fecha, now.min, abonos), abonosCancha: abonos, tarifasCancha: null, canchasHoy: now.fecha };
   }
   function leer() {
     try { const raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); } catch (_) { /* dato roto → resembrar */ }
@@ -47,7 +55,17 @@ export function createLocalStore(config) {
   if (canal) canal.onmessage = () => emitir('otra-pestaña');
   self.addEventListener('storage', (e) => { if (e.key === KEY) emitir('otra-pestaña'); });
 
-  const leerE = () => { const db = leer(); if (config.modulos?.estadias && !db.estadias) { Object.assign(db, semillaEstadias()); escribir(db, false); } return db; };
+  const leerE = () => { const db = leer(); if (config.modulos?.estadias && !db.estadias) { Object.assign(db, semillaEstadias()); escribir(db, false); } if (config.modulos?.canchas) {
+      if (!db.turnosCancha) { Object.assign(db, semillaCanchas()); escribir(db, false); }
+      else if (config.canchas?.demoOcupacion !== false && db.canchasHoy !== ahoraEn(config.zonaHoraria || 'America/Argentina/Buenos_Aires').fecha) {
+        // otro día: la ocupación de ejemplo se rearma alrededor de hoy (lo que cargó el visitante se respeta)
+        const C = configCanchas(config); const now = ahoraEn(config.zonaHoraria || 'America/Argentina/Buenos_Aires');
+        const propios = db.turnosCancha.filter(x => !x.demo);
+        const demo = ocupacionDemoCanchas(C, config.horarios, now.fecha, now.min, db.abonosCancha || []).filter(x => canchaLibre(propios.filter(TURNO_ACTIVO), x.canchas, x.fecha, x.desde, x.hasta));
+        db.turnosCancha = [...propios, ...demo]; db.canchasHoy = now.fecha; escribir(db, false);
+      }
+    }
+    return db; };
   const mut = (fn) => { const db = leerE(); db.giftcards = db.giftcards || []; const r = fn(db); escribir(db); return r; };
   const GC = configGiftcards(config);
   const conEstado = (g) => g && ({ ...g, estado: estadoGiftcard(g) });
@@ -151,15 +169,91 @@ export function createLocalStore(config) {
     async deleteEstadia(id) { return mut(db => { db.estadias = (db.estadias || []).filter(x => x.id !== id); }); },
     async getEstadiaPublica(id) { const e = (leerE().estadias || []).find(x => x.id === id); return e ? { id: e.id, codigo: e.codigo, estado: e.estado, pagoEstado: e.pagoEstado, sena: e.sena, total: e.total, llegada: e.llegada, salida: e.salida, habitacion: e.habitacion, nombre: e.nombre } : null; },
 
+    // ---- canchas (complejos deportivos)
+    async getTurnosCancha() { return (leerE().turnosCancha || []).slice().sort((a, b) => (a.fecha + String(a.desde).padStart(4, '0')).localeCompare(b.fecha + String(b.desde).padStart(4, '0'))); },
+    async getAbonosCancha() { return (leerE().abonosCancha || []).slice(); },
+    // Ocupación pública (sin datos personales) de un rango de fechas: [{ fecha, canchas, desde, hasta }]
+    async getOcupacionCanchas(desde, hasta) {
+      const db = leerE(); const out = [];
+      const fechas = new Set((db.turnosCancha || []).filter(x => x.fecha >= desde && x.fecha <= hasta).map(x => x.fecha));
+      for (let f = desde; f <= hasta; f = new Date(Date.parse(f) + 864e5).toISOString().slice(0, 10)) fechas.add(f);
+      fechas.forEach(f => ocupacionDia(db.turnosCancha, db.abonosCancha, f).forEach(o => out.push({ fecha: o.fecha, canchas: o.canchas, desde: o.desde, hasta: o.hasta })));
+      return out;
+    },
+    async getTarifasCancha() { return tarifasCanchas(configCanchas(config), leerE().tarifasCancha || {}); },
+    async saveTarifasCancha(tf) { return mut(db => { db.tarifasCancha = clone(tf); return db.tarifasCancha; }); },
+    async createTurnoCancha(data) {
+      const C = configCanchas(config);
+      return mut(db => {
+        db.turnosCancha = db.turnosCancha || [];
+        const bloqueo = data.origen === 'bloqueo';
+        const d = deporteDe(C, data.deporte);
+        if (!bloqueo && !d) throw Object.assign(new Error('deporte'), { code: 'deporte' });
+        const canchas = bloqueo ? (data.canchas || []) : ocupaDe(C, data.deporte, data.unidad);
+        if (!canchas.length) throw Object.assign(new Error('cancha'), { code: 'cancha' });
+        const desde = Number(data.desde); const hasta = bloqueo ? Number(data.hasta) : desde + d.duracion;
+        if (!(hasta > desde)) throw Object.assign(new Error('hora'), { code: 'hora' });
+        if (!bloqueo && !canchaLibre(ocupacionDia(db.turnosCancha, db.abonosCancha, data.fecha), canchas, data.fecha, desde, hasta)) throw Object.assign(new Error('sin_lugar'), { code: 'sin_lugar' });
+        const tf = tarifasCanchas(C, db.tarifasCancha || {});
+        const q = bloqueo ? null : cotizarCancha(C, tf, data.deporte, data.fecha, desde, data.extras || {});
+        const web = !data.origen || data.origen === 'web';
+        const tn = { id: uid('t-'), codigo: bloqueo ? '' : codigoCorto(config.prefijoPedido || 'CH'), deporte: data.deporte || null, unidad: data.unidad || null, canchas, fecha: data.fecha, desde, hasta,
+          nombre: data.nombre || '', telefono: data.telefono || '', email: data.email || '', comentario: data.comentario || '', motivo: data.motivo || '',
+          extras: q ? q.extras : [], precio: q?.precio ?? null, total: q?.total ?? null, pico: q?.pico ?? null, sena: web && data.pago === 'mercadopago' ? q?.sena ?? null : null,
+          origen: data.origen || 'web', pago: data.pago || (web ? 'complejo' : 'externo'), pagoEstado: data.pago === 'mercadopago' ? 'pendiente' : 'a_coordinar',
+          estado: bloqueo || !web ? 'confirmada' : 'pendiente', creado: new Date().toISOString() };
+        db.turnosCancha.push(tn); return tn;
+      });
+    },
+    async updateTurnoCancha(id, patch) {
+      return mut(db => {
+        const tn = (db.turnosCancha || []).find(x => x.id === id); if (!tn) return null;
+        const prox = { ...tn, ...patch };
+        if ((patch.fecha || patch.desde != null || patch.canchas || (patch.estado && patch.estado !== 'cancelada')) && TURNO_ACTIVO(prox) && prox.origen !== 'bloqueo'
+          && !canchaLibre(ocupacionDia(db.turnosCancha, db.abonosCancha, prox.fecha), prox.canchas, prox.fecha, prox.desde, prox.hasta, id)) throw Object.assign(new Error('sin_lugar'), { code: 'sin_lugar' });
+        Object.assign(tn, patch);
+        if (patch.pagoEstado === 'aprobado' && tn.estado === 'pendiente') tn.estado = 'confirmada';
+        return tn;
+      });
+    },
+    async deleteTurnoCancha(id) { return mut(db => { db.turnosCancha = (db.turnosCancha || []).filter(x => x.id !== id); }); },
+    async getTurnoCanchaPublico(id) { const x = (leerE().turnosCancha || []).find(y => y.id === id); return x ? { id: x.id, codigo: x.codigo, estado: x.estado, pagoEstado: x.pagoEstado, deporte: x.deporte, unidad: x.unidad, canchas: x.canchas, fecha: x.fecha, desde: x.desde, hasta: x.hasta, nombre: x.nombre, extras: x.extras, precio: x.precio, total: x.total, sena: x.sena, pico: x.pico } : null; },
+    async saveAbonoCancha(ab) {
+      const C = configCanchas(config);
+      return mut(db => {
+        db.abonosCancha = db.abonosCancha || [];
+        const i = db.abonosCancha.findIndex(x => x.id === ab.id);
+        const d = deporteDe(C, ab.deporte);
+        const a = { estado: 'activo', liberadas: [], ...(i >= 0 ? db.abonosCancha[i] : {}), ...ab, id: ab.id || uid('ab-') };
+        if (d) { a.canchas = ocupaDe(C, a.deporte, a.unidad); a.duracion = d.duracion; }
+        a.hora = Number(a.hora); a.dow = Number(a.dow);
+        if (i < 0) {
+          // un abono nuevo no puede pisar otro abono el mismo día y hora
+          const choca = db.abonosCancha.some(x => x.estado !== 'baja' && Number(x.dow) === a.dow && x.canchas.some(c => a.canchas.includes(c)) && x.hora < a.hora + a.duracion && a.hora < x.hora + x.duracion);
+          if (choca) throw Object.assign(new Error('sin_lugar'), { code: 'sin_lugar' });
+          db.abonosCancha.push(a);
+        } else db.abonosCancha[i] = a;
+        return a;
+      });
+    },
+
     // ---- pedidos
     async createPedido(data) {
       return mut(db => {
         const calc = armarPedido(db.productos.filter(p => p.precio != null || tieneVariantes(p) || config.pedidos?.sinPrecio === 'a_confirmar'), data.items, { tipo: data.tipo, pedidos: config.pedidos, descuentoPct: data.pago === 'efectivo' ? descuentoEfectivo(config) : 0, giftcards: GC, categorias: db.categorias, casillas: data.casillas || [] });
         if (!calc.items.length) throw Object.assign(new Error('vacio'), { code: 'vacio' });
+        // stock del día: si no alcanza, no entra; si alcanza, se descuenta (y vuelve si el pedido se cancela)
+        const conStock = !!config.carta?.stock;
+        if (conStock) {
+          const f = faltantes(config, db.productos, calc.items);
+          if (f.length) throw Object.assign(new Error('stock'), { code: 'stock', faltantes: f });
+          cantidadesPorProducto(calc.items).forEach((n, id) => { const x = db.productos.find(q => q.id === id); if (x && stockDe(config, x) != null) x.stock = stockDe(config, x) - n; });
+        }
         const p = {
           id: uid('o-'), codigo: codigoCorto(config.prefijoPedido || 'PD'), ...calc,
           tipo: data.tipo, cliente: data.cliente, nota: data.nota || '', pago: data.pago, sucursal: data.sucursal || null, retiro: data.retiro || null,
           pagoEstado: data.pago === 'mercadopago' ? 'pendiente' : 'a_coordinar', estado: 'pendiente', creado: new Date().toISOString(),
+          ...(conStock ? { stockDescontado: true } : {}),
         };
         db.pedidos.push(p);
         // cada gift card del pedido queda "pendiente" hasta que se cobra
@@ -171,10 +265,20 @@ export function createLocalStore(config) {
         return p;
       });
     },
+    // cupo por franja (pedidos.encargo.cupoFranja): cuántos pedidos activos hay en cada día|franja
+    async getOcupacionFranjas() { return ocupacionFranjas(leer().pedidos); },
+    // vuelve a poner el stock de la noche (stockBase) en todos los productos que lo tienen
+    async cargarStock() { return mut(db => { db.productos.forEach(p => { if (p.stockBase != null && p.stockBase !== '') p.stock = Number(p.stockBase); }); }); },
     async getPedidos() { return leer().pedidos.slice().sort((a, b) => b.creado.localeCompare(a.creado)); },
     async updatePedido(id, patch) {
       return mut(db => {
-        const p = db.pedidos.find(x => x.id === id); if (p) Object.assign(p, patch);
+        const p = db.pedidos.find(x => x.id === id);
+        // cancelado: devuelve el stock que había descontado
+        if (p && p.stockDescontado && String(patch.estado || '').startsWith('cancel') && !String(p.estado || '').startsWith('cancel')) {
+          cantidadesPorProducto(p.items).forEach((n, pid) => { const x = db.productos.find(q => q.id === pid); if (x && x.stock != null && x.stock !== '') x.stock = Number(x.stock) + n; });
+          p.stockDescontado = false;
+        }
+        if (p) Object.assign(p, patch);
         if (p && ['aprobado', 'cobrado'].includes(patch.pagoEstado)) activar(db, id);
         return p;
       });

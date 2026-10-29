@@ -1,6 +1,6 @@
 // MAKIA · demo web — intro, carta con la taza que se arma, cordillera, tolva, tienda de café, ticket por la ventanilla.
-import { initKit } from '../kit/kit.js?v=3';
-import { esc } from '../kit/core/util.js?v=3';
+import { initKit } from '../kit/kit.js?v=4';
+import { esc } from '../kit/core/util.js?v=4';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -148,7 +148,7 @@ const carta = $('#carta'), cartaEl = $('#carta-principal');
 const META = {
   cafe: (n) => `${n} opciones · Puerto Blest de la tolva · para llevar`,
   frios: (n) => `${n} opciones · para llevar por la ventanilla`,
-  entrepanes: (n) => `Lunes a sábados de 12 a 16 · ${n} opciones · se piden para retirar`,
+  entrepanes: (n) => `Lunes a sábados de 12:00 a 16:00 hs · ${n} opciones · se piden para retirar`,
   dulce: (n) => `${n} opciones · pastelería artesanal`,
 };
 function catActual() { return $('.kit-tab.is-on', cartaEl)?.dataset.cat || $('.kit-carta__panel:not([hidden]) .kit-item', cartaEl)?.dataset.cat || 'cafe'; }
@@ -235,61 +235,52 @@ function bloquear(si) {
 // LA CORDILLERA DE LOS SÁNDWICHES
 // =========================================================
 const CUMBRES = [['andes', 200, 150], ['chimborazo', 420, 120], ['genova', 660, 70], ['tokio', 900, 95], ['comuna', 1150, 60], ['peregrino', 1380, 110]];
-const cumbresEl = $('[data-cumbres]'), postal = $('[data-postal]'), cordiScroll = $('.cordi__scroll');
+const cumbresEl = $('[data-cumbres]'), pop = $('[data-pop]'), mapaCordi = $('[data-cordi]');
 let cumbreOn = null;
 function pintarCordillera() {
   const ok = CUMBRES.filter(([id]) => productos.get(id) && productos.get(id).disponible !== false);
-  cumbresEl.innerHTML = ok.map(([id, x, y], i) => `<button type="button" class="cumbre${id === cumbreOn ? ' is-on' : ''}" data-cumbre="${id}" style="left:${(x / 1600 * 100).toFixed(2)}%;top:${(y / 360 * 100).toFixed(2)}%;--i:${i}" aria-pressed="${id === cumbreOn}"><span class="cumbre__n">${esc(productos.get(id).nombre)}</span><span class="cumbre__p"></span></button>`).join('');
-  if (!cumbreOn || !ok.some(([id]) => id === cumbreOn)) activarCumbre(ok[0]?.[0], false);
-  else pintarPostal(cumbreOn, false);
+  cumbresEl.innerHTML = ok.map(([id, x, y], i) => `<button type="button" class="cumbre${id === cumbreOn ? ' is-on' : ''}" data-cumbre="${id}" style="left:${(x / 1600 * 100).toFixed(2)}%;top:${(y / 360 * 100).toFixed(2)}%;--i:${i}" aria-pressed="${id === cumbreOn}" aria-label="${esc(productos.get(id).nombre)}"><span class="cumbre__n" aria-hidden="true">${esc(productos.get(id).nombre)}</span><span class="cumbre__p"></span></button>`).join('');
+  const id = cumbreOn && ok.some(c => c[0] === cumbreOn) ? cumbreOn : ok[0]?.[0];
+  cumbreOn = null; activarCumbre(id, false);
 }
-function pintarPostal(id, animar = true) {
+// la tarjeta queda debajo de la cumbre elegida, con la flechita apuntando al puntito
+function ubicarPop() {
+  const b = cumbreOn && $(`[data-cumbre="${cumbreOn}"]`, cumbresEl); if (!b) return;
+  const W = mapaCordi.clientWidth, w = pop.offsetWidth;
+  const cx = b.offsetLeft;                                       // centro del puntito (el botón está centrado con margen negativo)
+  const cielo = $('.cordi__cielo').clientHeight;
+  const fondo = Math.max(...CUMBRES.map(c => c[2])) / 360 * cielo;  // la cumbre más baja
+  const x = Math.max(0, Math.min(W - w, cx - w / 2));
+  pop.style.setProperty('--x', x + 'px');
+  pop.style.setProperty('--y', (fondo + 30) + 'px');
+  pop.style.setProperty('--fx', Math.max(20, Math.min(w - 20, cx - x)) + 'px');
+}
+function pintarPop(id, animar = true) {
   const p = productos.get(id); if (!p) return;
   const llenar = () => {
-    const img = $('.postal__foto img', postal);
-    if (p.foto) { img.src = kit.asset(p.foto); img.alt = p.nombre; }
-    $('.postal__t', postal).textContent = p.nombre;
-    $('.postal__d', postal).textContent = p.descripcion || '';
-    $('.postal__precio', postal).textContent = kit.money(p.precio) || '';
-    $('.postal__alt', postal).textContent = `Cumbre ${CUMBRES.findIndex(c => c[0] === id) + 1} de ${CUMBRES.length} · almuerzo`;
-    $('.postal__qty', postal).innerHTML = kit.pedible(p) ? `<div data-kit-qty="${esc(p.id)}"></div>` : '';
-    kit.carrito?.sync(postal);
-    postal.classList.remove('is-cambia');
+    const img = $('.cumbre-pop__foto img', pop);
+    if (p.foto) { img.src = kit.asset(chica(p.foto)); img.alt = p.nombre; }
+    $('.cumbre-pop__t', pop).textContent = p.nombre;
+    $('.cumbre-pop__d', pop).textContent = p.descripcion || '';
+    $('.cumbre-pop__precio', pop).textContent = kit.money(p.precio) || '';
+    $('.cumbre-pop__qty', pop).innerHTML = kit.pedible(p) ? `<div data-kit-qty="${esc(p.id)}"></div>` : '';
+    kit.carrito?.sync(pop);
+    pop.classList.remove('is-cambia');
   };
+  ubicarPop();
   if (!animar || calma) { llenar(); return; }
-  postal.classList.add('is-cambia'); setTimeout(llenar, 220);
+  pop.classList.add('is-cambia'); setTimeout(llenar, 180);
 }
-function activarCumbre(id, animar = true, mover = false) {
-  if (!id) return;
-  const cambio = id !== cumbreOn; cumbreOn = id;
+function activarCumbre(id) {
+  if (!id || id === cumbreOn) return;
+  cumbreOn = id;
   $$('.cumbre', cumbresEl).forEach(b => { const on = b.dataset.cumbre === id; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on); });
-  if (cambio) pintarPostal(id, animar);
-  if (mover && cordiScroll.scrollWidth > cordiScroll.clientWidth) {
-    const b = $(`[data-cumbre="${id}"]`, cumbresEl);
-    if (b) cordiScroll.scrollTo({ left: b.offsetLeft - cordiScroll.clientWidth / 2, behavior: calma ? 'auto' : 'smooth' });
-  }
+  pintarPop(id);
 }
-cumbresEl.addEventListener('click', (e) => { const b = e.target.closest('[data-cumbre]'); if (b) activarCumbre(b.dataset.cumbre, true, true); });
+cumbresEl.addEventListener('click', (e) => { const b = e.target.closest('[data-cumbre]'); if (b) activarCumbre(b.dataset.cumbre); });
 cumbresEl.addEventListener('pointerover', (e) => { if (!hoverFino.matches) return; const b = e.target.closest('[data-cumbre]'); if (b) activarCumbre(b.dataset.cumbre); });
 cumbresEl.addEventListener('focusin', (e) => { const b = e.target.closest('[data-cumbre]'); if (b) activarCumbre(b.dataset.cumbre); });
-let scT = 0;
-cordiScroll.addEventListener('scroll', () => {
-  clearTimeout(scT);
-  scT = setTimeout(() => {
-    const c = cordiScroll.scrollLeft + cordiScroll.clientWidth / 2;
-    let mejor = null, d = 1e9;
-    $$('.cumbre', cumbresEl).forEach(b => { const x = Math.abs(b.offsetLeft - c); if (x < d) { d = x; mejor = b; } });
-    if (mejor) activarCumbre(mejor.dataset.cumbre);
-  }, 120);
-}, { passive: true });
-// arrastrar la cordillera con el mouse (pantallas medianas donde se desliza)
-(function arrastre(el) {
-  let x0 = 0, s0 = 0, on = false, movio = false;
-  el.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse' || el.scrollWidth <= el.clientWidth) return; on = true; movio = false; x0 = e.clientX; s0 = el.scrollLeft; el.style.scrollSnapType = 'none'; });
-  addEventListener('pointermove', (e) => { if (!on) return; const dx = e.clientX - x0; if (Math.abs(dx) > 4) movio = true; el.scrollLeft = s0 - dx; });
-  addEventListener('pointerup', () => { if (!on) return; on = false; el.style.scrollSnapType = ''; });
-  el.addEventListener('click', (e) => { if (movio) { e.stopPropagation(); e.preventDefault(); movio = false; } }, true);
-})(cordiScroll);
+addEventListener('resize', () => requestAnimationFrame(ubicarPop), { passive: true });
 
 // =========================================================
 // LA TOLVA + TIENDA DE CAFÉ EN GRANO
@@ -400,7 +391,7 @@ $('[data-borrar]')?.addEventListener('click', () => {
 // =========================================================
 const DIAS = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
 const NOMBRE = { dom: 'el domingo', lun: 'el lunes', mar: 'el martes', mie: 'el miércoles', jue: 'el jueves', vie: 'el viernes', sab: 'el sábado' };
-const h12 = (h) => String(h).replace(/^0/, '').replace(/:00$/, '');
+const h12 = (h) => String(h).replace(/^0(\d)/, '$1');   // "08:00" → "8:00"
 function proximaApertura() {
   const H = kit.config.horarios; const hoy = new Date(kit.hoy() + 'T12:00:00Z').getUTCDay();
   for (let i = 1; i <= 7; i++) { const d = DIAS[(hoy + i) % 7]; if ((H[d] || []).length) return { dia: i === 1 ? 'mañana' : NOMBRE[d], hora: h12(H[d][0][0]) }; }
@@ -409,9 +400,9 @@ function proximaApertura() {
 function pintarAbierto() {
   const e = kit.abierto();
   let corto, largo;
-  if (e.abierto) { corto = `Abierto · hasta las ${h12(e.cierra)}`; largo = `Abierto ahora · cerramos a las ${h12(e.cierra)}`; }
-  else if (e.abre) { corto = `Abrimos a las ${h12(e.abre)}`; largo = `Cerrado ahora · abrimos hoy a las ${h12(e.abre)}`; }
-  else { const p = proximaApertura(); corto = p ? `Abrimos ${p.dia} a las ${p.hora}` : 'Cerrado'; largo = p ? `Cerrado ahora · abrimos ${p.dia} a las ${p.hora}` : 'Cerrado'; }
+  if (e.abierto) { corto = `Abierto · hasta las ${h12(e.cierra)} hs`; largo = `Abierto ahora · cerramos a las ${h12(e.cierra)} hs`; }
+  else if (e.abre) { corto = `Abrimos a las ${h12(e.abre)} hs`; largo = `Cerrado ahora · abrimos hoy a las ${h12(e.abre)} hs`; }
+  else { const p = proximaApertura(); corto = p ? `Abrimos ${p.dia} a las ${p.hora} hs` : 'Cerrado'; largo = p ? `Cerrado ahora · abrimos ${p.dia} a las ${p.hora} hs` : 'Cerrado'; }
   $$('[data-abierto]').forEach(el => { el.classList.toggle('is-cerrado', !e.abierto); $('span', el).textContent = corto; });
   $$('[data-abierto-largo]').forEach(el => { el.classList.toggle('is-cerrado', !e.abierto); $('span', el).textContent = largo; });
   const d = DIAS[new Date(kit.hoy() + 'T12:00:00Z').getUTCDay()];
@@ -445,9 +436,9 @@ function cuandoTexto(r) {
   const [, m, d] = r.fecha.split('-').map(Number);
   const dia = r.fecha === kit.hoy() ? 'hoy' : `el ${DIAS_L[new Date(r.fecha + 'T12:00:00Z').getUTCDay()]} ${d}/${m}`;
   const f = r.franja || {};
-  if (f.asap || f.id === 'asap') return `Retirás <b>lo antes posible</b>, ${dia} (~${esc(h12(f.desde))} h)`;
-  if (f.desde && f.desde === f.hasta) return `Retirás <b>${dia} a las ${esc(h12(f.desde))}</b>`;
-  return `Retirás <b>${dia}</b> · ${esc(f.nombre || '')} (${esc(h12(f.desde))} a ${esc(h12(f.hasta))} h)`;
+  if (f.asap || f.id === 'asap') return `Retirás <b>lo antes posible</b>, ${dia} (~${esc(h12(f.desde))} hs)`;
+  if (f.desde && f.desde === f.hasta) return `Retirás <b>${dia} a las ${esc(h12(f.desde))} hs</b>`;
+  return `Retirás <b>${dia}</b> · ${esc(f.nombre || '')} (${esc(h12(f.desde))} a ${esc(h12(f.hasta))} hs)`;
 }
 document.addEventListener('kit:exito', (e) => {
   const d = e.detail; if (!['enviado', 'aprobado'].includes(d.estado)) return;

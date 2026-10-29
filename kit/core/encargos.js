@@ -6,7 +6,8 @@
 //     "anticipacionHoras": 12,           // por defecto (cada categoría puede tener la suya: "anticipacionHoras": 48)
 //     "diasAdelante": 14,
 //     "franjas": [{ "id": "manana", "nombre": "Mañana", "desde": "07:00", "hasta": "12:00" }],
-//     "cerrados": ["2026-12-25"]
+//     "cerrados": ["2026-12-25"],
+//     "cupoFranja": 6                    // opcional: pedidos por franja (o "cupo" en cada franja); llena = no se ofrece
 //   }
 // }
 //
@@ -43,7 +44,8 @@ export function categoriasVisibles(cats, hoy, forzar = null) {
 // ---------- días y franjas de retiro
 // lineas: [{ id, cant }], productos y categorías de la carta.
 // Devuelve [{ fecha, dow, abierto, franjas: [{ id, nombre, desde, hasta, disponible }] }] y la anticipación usada.
-export function opcionesRetiro({ horarios, encargo, tz, productos = [], categorias = [], lineas = [], ignorarVentanas = false }) {
+// ocupacion: { 'fecha|franja': pedidos } para el cupo por franja (encargo.cupoFranja).
+export function opcionesRetiro({ horarios, encargo, tz, productos = [], categorias = [], lineas = [], ignorarVentanas = false, ocupacion = {} }) {
   const E = configEncargo(encargo); if (!E) return { dias: [], horas: 0 };
   const porId = new Map(productos.map(p => [p.id, p]));
   const cats = new Map(categorias.map(c => [c.id, c]));
@@ -72,7 +74,9 @@ export function opcionesRetiro({ horarios, encargo, tz, productos = [], categori
       const a = aMin(f.desde), b = aMin(f.hasta);
       const solapa = abiertoHorario.some(([x, y]) => a < y && b > x);
       const limite = n * 1440 + (horas > 0 ? a : b - 30);
-      return { id: f.id, nombre: f.nombre, desde: f.desde, hasta: f.hasta, disponible: !cerrado && solapa && limite >= minimo, abre: solapa };
+      const cupo = Number(f.cupo ?? E.cupoFranja) || 0;
+      const lleno = cupo > 0 && (ocupacion[`${fecha}|${f.id}`] || 0) >= cupo;
+      return { id: f.id, nombre: f.nombre, desde: f.desde, hasta: f.hasta, disponible: !cerrado && solapa && limite >= minimo && !lleno, abre: solapa, lleno };
     }).filter(f => f.abre);
     dias.push({ fecha, dow: diaSemana(fecha), abierto: !cerrado && fr.some(f => f.disponible), franjas: fr });
   }
@@ -115,10 +119,12 @@ export function textoRetiro(r, { dias, hoy, asapTexto = 'lo antes posible' } = {
   if (!r?.fecha) return '';
   const [, m, d] = r.fecha.split('-').map(Number);
   const pre = r.fecha === hoy ? 'hoy ' : dias ? dias[diaSemana(r.fecha)].toLowerCase() + ' ' : '';
-  const hs = (s) => String(s || '').replace(/^0/, '').replace(/:00$/, '');
+  // horarios siempre con minutos y "hs": "8:00 a 12:00 hs" (kit 1.15)
+  const hs = (s) => String(s || '').replace(/^0(\d)/, '$1');
   const fr = r.franja;
-  const f = !fr ? '' : fr.asap || fr.id === 'asap' ? ` · ${asapTexto} (~${String(fr.desde).replace(/^0/, '')} h)`
-    : fr.desde && fr.desde === fr.hasta ? ` · ${String(fr.desde).replace(/^0/, '')} h`
-    : ` · ${fr.nombre} (${hs(fr.desde)} a ${hs(fr.hasta)} h)`;
+  const f = !fr ? '' : fr.asap || fr.id === 'asap' ? ` · ${asapTexto} (~${hs(fr.desde)} hs)`
+    : fr.desde && fr.desde === fr.hasta ? ` · ${hs(fr.desde)} hs`
+    // si la franja ya se llama por su horario ("21:00 a 21:30") no se repite entre paréntesis (kit 1.13)
+    : String(fr.nombre).includes(fr.desde) ? ` · ${fr.nombre} hs` : ` · ${fr.nombre} (${hs(fr.desde)} a ${hs(fr.hasta)} hs)`;
   return `${pre}${d}/${m}${f}`;
 }
