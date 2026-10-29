@@ -1,0 +1,10 @@
+/* Fuentes de Makia (las usa la web, el panel y la carta del QR) */
+@font-face { font-family: 'Antonio'; font-weight: 600; font-display: swap; src: url(../fonts/antonio-latin-600-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Antonio'; font-weight: 700; font-display: swap; src: url(../fonts/antonio-latin-700-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Saira Extra Condensed'; font-weight: 500; font-display: swap; src: url(../fonts/saira-extra-condensed-latin-500-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Saira Extra Condensed'; font-weight: 600; font-display: swap; src: url(../fonts/saira-extra-condensed-latin-600-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Instrument Sans'; font-weight: 400; font-display: swap; src: url(../fonts/instrument-sans-latin-400-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Instrument Sans'; font-weight: 500; font-display: swap; src: url(../fonts/instrument-sans-latin-500-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Instrument Sans'; font-weight: 600; font-display: swap; src: url(../fonts/instrument-sans-latin-600-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Caveat'; font-weight: 600; font-display: swap; src: url(../fonts/caveat-latin-600-normal.woff2) format('woff2'); }
+

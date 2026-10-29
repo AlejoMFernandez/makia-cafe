@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Makia · Especialidad Cafetera en Villa del Parque</title>
+<meta name="description" content="Mirá la carta, pedí tu café y retiralo en la ventanilla de Jonte 2999. Café de Puerto Blest, almuerzos de 12 a 16 y café en grano.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Makia · Especialidad Cafetera">
+<meta property="og:url" content="https://makia-cafe.vercel.app/">
+<meta property="og:title" content="Makia · Especialidad Cafetera en Villa del Parque">
+<meta property="og:description" content="Mirá la carta, pedí tu café y retiralo en la ventanilla de Jonte 2999.">
+<meta property="og:image" content="https://makia-cafe.vercel.app/img/og.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:alt" content="Makia · Pedilo antes de llegar">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://makia-cafe.vercel.app/img/og.jpg?v=1">
+<meta name="theme-color" content="#141413">
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<script>
+  // intro: solo con JS y sin "reducir movimiento" (así no hay parpadeo ni nada trabado)
+  (function () { var d = document.documentElement; d.classList.add('js');
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('con-intro'); })();
+</script>
+<link rel="preload" href="fonts/antonio-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/instrument-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" as="image" href="img/h/hero-m.webp" imagesrcset="img/h/hero-m.webp 900w, img/h/hero-m-lg.webp 1300w" imagesizes="92vw" media="(max-width: 899px)">
+<link rel="preload" as="image" href="img/h/hero-d.webp" imagesrcset="img/h/hero-d.webp 1100w, img/h/hero-d-lg.webp 1600w" imagesizes="(min-width: 1320px) 600px, 46vw" media="(min-width: 900px)">
+<link rel="stylesheet" href="css/fuentes.css?v=1">
+<link rel="stylesheet" href="kit/kit.css?v=3">
+<link rel="stylesheet" href="css/makia.css?v=1">
+</head>
+<body>
+
+<div class="intro" aria-hidden="true">
+  <div class="intro__toldo"><span class="toldo"></span><span class="feston"></span></div>
+  <div class="intro__logo">
+    <img src="img/logo-crema.svg" alt="" width="344" height="540">
+    <span class="intro__gota"></span>
+  </div>
+</div>
+
+<a class="saltar" href="#carta">Ir a la carta</a>
+
+<header class="top" id="top">
+  <div class="top__in">
+    <a class="marca" href="#inicio" aria-label="Makia, inicio">
+      <img src="img/icono-crema.svg" alt="" width="344" height="431">
+      <span class="marca__txt">MAKIA</span>
+      <span class="marca__sub">Especialidad cafetera</span>
+    </a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#carta">Carta</a><a href="#almuerzos">Almuerzos</a><a href="#grano">Café en grano</a><a href="#como">Cómo pedir</a><a href="#donde">Dónde estamos</a>
+    </nav>
+    <div class="top__acc">
+      <button type="button" class="top__carro" data-kit-open="carrito" data-kit-target aria-label="Ver mi pedido">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.3 11.1a2 2 0 0 1-2 1.9H8.3a2 2 0 0 1-2-1.9L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <b class="top__n" hidden>0</b>
+      </button>
+      <a class="btn btn--rojo btn--chico top__pedir" href="#carta">
+        <span class="solo-d">Armar pedido</span><span class="solo-m">Pedir</span>
+      </a>
+      <button type="button" class="top__menu" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu-m">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="menu-m" id="menu-m" hidden>
+  <nav aria-label="Menú">
+    <a href="#carta">Carta</a><a href="#almuerzos">Almuerzos</a><a href="#grano">Café en grano</a><a href="#como">Cómo pedir</a><a href="#donde">Dónde estamos</a>
+  </nav>
+  <p class="menu-m__pie">Av. Álvarez Jonte 2999 · Lun a vie 8 a 20 · Sáb 9 a 20</p>
+</div>
+
+<main id="inicio">
+
+  <!-- HERO · toldo y ventanilla -->
+  <section class="hero" aria-labelledby="hero-t">
+    <div class="hero__toldo" aria-hidden="true"><span class="toldo"></span><span class="feston"></span></div>
+    <div class="hero__in">
+      <div class="hero__txt">
+        <p class="eti hero__eti"><span>Especialidad cafetera · Villa del Parque</span></p>
+        <h1 class="hero__t" id="hero-t">
+          <span class="ln"><span>Pedilo antes.</span></span>
+          <span class="ln"><span>Retiralo en la</span></span>
+          <span class="ln"><span>ventanilla.</span></span>
+        </h1>
+        <p class="hero__p"><span class="solo-d">Café de Puerto Blest en tolva, almuerzos de 12 a 16 y pastelería artesanal. Elegís desde acá, pagás o avisás, y pasás por Jonte 2999.</span><span class="solo-m">Café de Puerto Blest, almuerzos de 12 a 16 y pastelería. Elegís acá y pasás por Jonte 2999.</span></p>
+        <div class="hero__ctas">
+          <a class="btn btn--rojo" href="#carta">Armar mi pedido</a>
+          <a class="btn btn--linea" href="#carta" data-ir-carta>Ver la carta</a>
+        </div>
+        <dl class="hero__info">
+          <div><dt>En tolva</dt><dd data-kit-destacado="tolva.origen">Perú · Amazonas</dd></div>
+          <div><dt>Almuerzos</dt><dd>Lun a sáb · 12 a 16</dd></div>
+          <div><dt>Traé tu vaso</dt><dd>10% off en el café</dd></div>
+        </dl>
+      </div>
+      <figure class="ventana">
+        <div class="ventana__marco">
+          <div class="ventana__foto">
+            <picture>
+              <source media="(min-width: 900px)" srcset="img/h/hero-d.webp 1100w, img/h/hero-d-lg.webp 1600w" sizes="(min-width: 1320px) 600px, 46vw">
+              <img src="img/h/hero-m.webp" srcset="img/h/hero-m.webp 900w, img/h/hero-m-lg.webp 1300w" sizes="(max-width: 899px) 92vw, 600px" alt="Café para llevar y croissant de Makia" width="900" height="1250" fetchpriority="high" decoding="async">
+            </picture>
+            <span class="chip-abierto" data-abierto><i></i><span>Abierto · hasta las 20</span></span>
+          </div>
+          <div class="ventana__repisa" aria-hidden="true">
+            <i class="st st--rojo"></i><i class="st st--crema"></i><i class="st st--turq"></i><i class="st st--blanco"></i>
+            <span>Ventanilla take away · Jonte 2999</span>
+          </div>
+        </div>
+        <div class="cartel" aria-hidden="true"><i></i><span><img src="img/icono-crema.svg" alt="" width="344" height="431"></span></div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- CÓMO PEDIR -->
+  <section class="pasos sec" id="como" aria-labelledby="pasos-t">
+    <div class="wrap">
+      <header class="cab" data-r>
+        <p class="eti">Cómo pedir</p>
+        <h2 class="t2" id="pasos-t">Tres pasos y tu café te espera</h2>
+      </header>
+      <ol class="pasos__lista">
+        <li class="paso" data-r style="--d:0">
+          <svg class="paso__ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M18 16h28l-3 40H21Z"/><path d="M16 16h32M22 10h20l2 6H20Z"/><path d="M20 30h24"/></svg>
+          <span class="paso__n">1</span>
+          <h3>Elegí</h3><p>Tu café, el almuerzo o algo dulce de la carta. También el café en grano para tu casa.</p>
+        </li>
+        <li class="paso" data-r style="--d:1">
+          <svg class="paso__ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="20" y="6" width="24" height="52" rx="5"/><path d="M28 50h8"/><path d="M26 22l5 5 9-10"/></svg>
+          <span class="paso__n">2</span>
+          <h3>Pagá o avisá</h3><p>Con Mercado Pago, en efectivo al retirar o confirmando por WhatsApp. Elegís a qué hora pasás.</p>
+        </li>
+        <li class="paso" data-r style="--d:2">
+          <svg class="paso__ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="8" y="10" width="48" height="36" rx="2"/><path d="M8 46h48v8H8z"/><path d="M14 10V6h36v4"/><path d="M26 46c0-6 12-6 12 0"/></svg>
+          <span class="paso__n">3</span>
+          <h3>Retirá en la ventanilla</h3><p>Pasás por la ventanilla de Jonte 2999 y te lo damos listo. Con tu vaso térmico, 10% off.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- CARTA -->
+  <section class="carta sec" id="carta" aria-labelledby="carta-t">
+    <div class="wrap">
+      <header class="cab cab--fila" data-r>
+        <div>
+          <p class="eti">La carta</p>
+          <h2 class="t2" id="carta-t">Café, almuerzos y algo dulce</h2>
+        </div>
+        <p class="cab__nota">Los precios de esta demo son de referencia: el local los cambia desde su panel.</p>
+      </header>
+      <div class="carta__grid">
+        <div class="carta__main">
+          <div class="carta__head" aria-live="polite">
+            <h3 class="carta__sec">Café</h3>
+            <p class="carta__meta">10 opciones · todo para llevar por la ventanilla</p>
+          </div>
+          <div class="taza-m" aria-hidden="true">
+            <div class="taza taza--m"><div class="taza__cuerpo"><div class="taza__liq"></div></div><i class="taza__asa"></i><i class="taza__plato"></i></div>
+            <div class="taza-m__txt"><span class="eti eti--chica">Armá tu taza</span><b class="taza__nombre">Flat white</b><span class="taza__capas-t"></span></div>
+          </div>
+          <div data-kit="carta" id="carta-principal" data-kit-categorias="cafe,frios,entrepanes,dulce" class="carta__kit"></div>
+          <div class="carta__nav">
+            <button type="button" class="btn btn--linea btn--chico" data-carta-mover="-1"><span aria-hidden="true">←</span> <span data-carta-prev>Anterior</span></button>
+            <button type="button" class="btn btn--linea btn--chico" data-carta-mover="1"><span data-carta-next>Siguiente</span> <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+        <aside class="carta__aside" aria-hidden="true">
+          <div class="aside__taza">
+            <p class="eti eti--chica">Armá tu taza</p>
+            <div class="taza taza--d"><div class="taza__cuerpo"><div class="taza__liq"></div></div><i class="taza__asa"></i><i class="taza__plato"></i></div>
+            <b class="taza__nombre">Flat white</b>
+            <ul class="taza__capas"></ul>
+            <p class="aside__hint">Pasá el mouse por la carta y la taza se arma sola.</p>
+          </div>
+          <figure class="aside__foto">
+            <div class="aside__img"><img alt="" width="900" height="900" decoding="async"></div>
+            <figcaption></figcaption>
+          </figure>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALMUERZOS · la cordillera -->
+  <section class="cordi sec sec--negra" id="almuerzos" aria-labelledby="cordi-t">
+    <div class="wrap">
+      <header class="cab cab--fila" data-r>
+        <div>
+          <p class="eti eti--crema">Almuerzos · lunes a sábados de 12 a 16</p>
+          <h2 class="t2" id="cordi-t">La cordillera de los sándwiches</h2>
+        </div>
+        <p class="cab__nota">Elegí una cumbre: cada una es un sándwich de la carta.</p>
+      </header>
+    </div>
+    <div class="cordi__scroll" tabindex="-1">
+      <div class="cordi__mapa">
+        <svg class="cordi__svg" viewBox="0 0 1600 360" preserveAspectRatio="none" aria-hidden="true">
+          <path class="cordi__sol" d="M800 360 L560 0 M800 360 L700 0 M800 360 L800 0 M800 360 L900 0 M800 360 L1040 0"/>
+          <path class="cordi__linea" d="M0 330 L70 270 L130 300 L200 150 L270 250 L330 215 L420 120 L500 230 L560 200 L660 70 L740 210 L800 180 L900 95 L980 230 L1050 190 L1150 60 L1230 220 L1290 180 L1380 110 L1460 250 L1530 220 L1600 300"/>
+          <path class="cordi__nieve" d="M200 150 L184 182 L200 172 L214 184 Z M420 120 L402 152 L420 142 L436 154 Z M660 70 L640 106 L660 96 L678 108 Z M900 95 L882 128 L900 118 L916 130 Z M1150 60 L1130 98 L1150 88 L1168 100 Z M1380 110 L1362 142 L1380 132 L1396 144 Z"/>
+        </svg>
+        <div class="cordi__cumbres" data-cumbres></div>
+      </div>
+    </div>
+    <div class="wrap">
+      <article class="postal" data-postal aria-live="polite">
+        <div class="postal__foto"><img alt="" width="900" height="900" decoding="async"></div>
+        <div class="postal__txt">
+          <p class="eti eti--chica eti--crema postal__alt">Cumbre</p>
+          <h3 class="postal__t"></h3>
+          <p class="postal__d"></p>
+          <div class="postal__pie"><b class="postal__precio"></b><div class="postal__qty"></div></div>
+        </div>
+      </article>
+      <p class="cordi__mas">En la carta hay más: Crainqueville, Tobas, Litoral, croissants rellenos, ensaladas y la sopa del día. <a href="#carta" data-ir-cat="entrepanes">Ver todos los almuerzos →</a></p>
+    </div>
+  </section>
+
+  <!-- TOLVA + CAFÉ EN GRANO -->
+  <section class="tolva sec" id="grano" aria-labelledby="tolva-t">
+    <div class="wrap">
+      <header class="cab" data-r>
+        <p class="eti">Café en grano · Puerto Blest</p>
+        <h2 class="t2" id="tolva-t">Llevate la tolva a casa</h2>
+      </header>
+      <div class="tolva__grid">
+        <div class="tolva__wow" data-r>
+          <button type="button" class="tolva__btn" data-tolva aria-label="Ver el café que está en la tolva">
+            <svg class="tolva__svg" viewBox="0 0 220 300" aria-hidden="true">
+              <path class="tl" d="M20 20 H200 L140 170 H80 Z"/>
+              <path class="tl" d="M34 20 V8 H186 V20"/>
+              <rect class="tl" x="80" y="170" width="60" height="44" rx="4"/>
+              <path class="tl" d="M94 214 V250 H126 V214"/>
+              <path class="tl tl--fina" d="M60 60 H160 M72 92 H148 M86 124 H134"/>
+              <g class="granos">
+                <ellipse cx="80" cy="44" rx="11" ry="7"/><ellipse cx="108" cy="38" rx="11" ry="7"/><ellipse cx="138" cy="46" rx="11" ry="7"/><ellipse cx="164" cy="36" rx="11" ry="7"/>
+                <ellipse cx="94" cy="70" rx="11" ry="7"/><ellipse cx="124" cy="74" rx="11" ry="7"/><ellipse cx="150" cy="66" rx="11" ry="7"/><ellipse cx="66" cy="62" rx="11" ry="7"/>
+                <ellipse cx="104" cy="104" rx="11" ry="7"/><ellipse cx="132" cy="102" rx="11" ry="7"/><ellipse cx="112" cy="134" rx="11" ry="7"/>
+              </g>
+              <g class="caen"><ellipse cx="110" cy="230" rx="7" ry="4.5"/><ellipse cx="106" cy="230" rx="7" ry="4.5"/><ellipse cx="114" cy="230" rx="7" ry="4.5"/></g>
+              <path class="tl" d="M60 262 H160 L150 292 H70 Z"/>
+            </svg>
+            <span class="tolva__toca">Tocá la tolva</span>
+          </button>
+          <div class="ficha" data-ficha>
+            <div class="ficha__cara ficha__cara--a">
+              <p class="eti eti--chica eti--turq">En tolva esta semana</p>
+              <h3 class="ficha__t" data-kit-destacado="tolva.origen">Perú · Amazonas</h3>
+              <p class="ficha__d" data-kit-destacado="tolva.finca">Finca Monteverde · lavado · Caturra, Typica, Bourbon</p>
+              <button type="button" class="ficha__girar" data-tolva>Ver notas de sabor ↻</button>
+            </div>
+            <div class="ficha__cara ficha__cara--b">
+              <p class="eti eti--chica eti--turq">Notas de sabor</p>
+              <p class="ficha__notas" data-kit-destacado="tolva.notas">Aroma a caramelo, muy dulce y de acidez leve.</p>
+              <a class="btn btn--rojo btn--chico" href="#tienda" data-ir-tienda>Llevate ¼ de este</a>
+              <button type="button" class="ficha__girar" data-tolva>Volver ↺</button>
+            </div>
+          </div>
+        </div>
+        <div class="tienda">
+          <div data-kit="carta" id="tienda" data-kit-categorias="grano" class="tienda__kit"></div>
+          <p class="tienda__hint" aria-hidden="true">Deslizá para ver más orígenes →</p>
+          <p class="tienda__nota">Lo molemos al momento de prepararte el pedido, para el método que uses.</p>
+        </div>
+      </div>
+      <div class="boxes" data-r>
+        <div class="boxes__cab">
+          <p class="eti">Para regalar</p>
+          <h3 class="t3">Boxes de regalo</h3>
+          <p>Se encargan con 48 h: elegís el día y la franja para retirarlo.</p>
+        </div>
+        <div data-kit="carta" id="boxes" data-kit-categorias="boxes" class="boxes__kit"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAÉ TU VASO -->
+  <section class="vaso" aria-labelledby="vaso-t">
+    <div class="wrap vaso__in">
+      <div class="vaso__dib" aria-hidden="true">
+        <div class="ecovaso"><i class="ecovaso__tapa"></i><i class="ecovaso__faja"><img src="img/icono-crema.svg" alt="" width="344" height="431"></i><i class="ecovaso__cafe"></i></div>
+      </div>
+      <div class="vaso__txt" data-r>
+        <p class="eti eti--crema">Traé tu vaso</p>
+        <h2 class="t2" id="vaso-t">Con tu vaso térmico, 10% off en el café</h2>
+        <p>Lo hacemos en la ventanilla desde siempre: te llevás tu café preferido, tenés descuento y cuidamos el planeta. Ahora también al pedir desde acá.</p>
+        <button type="button" class="vaso__sw" role="switch" aria-checked="false" data-vaso>
+          <span class="vaso__sw-i" aria-hidden="true"></span><span>Voy a traer mi vaso</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- USTEDES -->
+  <section class="ustedes sec" aria-labelledby="ust-t">
+    <div class="wrap">
+      <header class="cab cab--fila" data-r>
+        <div><p class="eti">Ustedes</p><h2 class="t2" id="ust-t">Cuatro años en el barrio</h2></div>
+        <p class="cab__nota">10,7 mil personas nos siguen en <a href="https://www.instagram.com/makia.cafe/" target="_blank" rel="noopener">@makia.cafe</a>.</p>
+      </header>
+      <div class="mazo" data-mazo aria-label="Fotos de Makia, deslizá para pasar">
+        <figure><img src="img/g/039-s.webp" alt="Tazas de colores sobre la mesa" width="640" height="1137" loading="lazy" decoding="async"></figure>
+        <figure><img src="img/g/040-s.webp" alt="Desayuno completo visto desde arriba" width="640" height="853" loading="lazy" decoding="async"></figure>
+        <figure><img src="img/g/001-s.webp" alt="Dos cafés y un ramo de flores" width="640" height="1135" loading="lazy" decoding="async"></figure>
+        <figure><img src="img/g/052-s.webp" alt="Tres tazas rojas con latte art" width="640" height="640" loading="lazy" decoding="async"></figure>
+        <figure><img src="img/g/178-s.webp" alt="La vereda de Makia llena de gente" width="640" height="781" loading="lazy" decoding="async"></figure>
+        <figure><img src="img/g/061-s.webp" alt="Tortas y café" width="640" height="800" loading="lazy" decoding="async"></figure>
+        <figure><img src="img/g/086-s.webp" alt="Tarta de frutos rojos y café" width="640" height="640" loading="lazy" decoding="async"></figure>
+        <figure><img src="img/g/260-s.webp" alt="La esquina de Jonte con una bici" width="640" height="800" loading="lazy" decoding="async"></figure>
+        <p class="mazo__hint" aria-hidden="true">Deslizá</p>
+      </div>
+      <div class="mosaico" aria-label="Fotos de Makia">
+        <figure class="m1" data-r><img src="img/g/039-s.webp" alt="Tazas de colores sobre la mesa" width="640" height="1137" loading="lazy" decoding="async"></figure>
+        <figure class="m2" data-r style="--d:1"><img src="img/g/052-s.webp" alt="Tres tazas rojas con latte art" width="640" height="640" loading="lazy" decoding="async"></figure>
+        <figure class="m3" data-r style="--d:2"><img src="img/g/178.webp" alt="La vereda de Makia llena de gente" width="989" height="1208" loading="lazy" decoding="async"></figure>
+        <figure class="m4" data-r style="--d:1"><img src="img/g/040-s.webp" alt="Desayuno completo visto desde arriba" width="640" height="853" loading="lazy" decoding="async"></figure>
+        <figure class="m5" data-r style="--d:2"><img src="img/g/061-s.webp" alt="Tortas y café" width="640" height="800" loading="lazy" decoding="async"></figure>
+        <figure class="m6" data-r style="--d:3"><img src="img/g/001-s.webp" alt="Dos cafés y un ramo de flores" width="640" height="1135" loading="lazy" decoding="async"></figure>
+        <figure class="m7" data-r style="--d:2"><img src="img/g/086-s.webp" alt="Tarta de frutos rojos y café" width="640" height="640" loading="lazy" decoding="async"></figure>
+        <figure class="m8" data-r style="--d:3"><img src="img/g/260-s.webp" alt="La esquina de Jonte con una bici" width="640" height="800" loading="lazy" decoding="async"></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- PIZARRÓN -->
+  <section class="pizarron" aria-label="Frases del pizarrón">
+    <div class="wrap">
+      <div class="pizarron__marco" data-r>
+        <div class="pizarron__tabla">
+          <p class="pizarron__frase" data-frase>Mucha gente pequeña, en lugares pequeños, haciendo cosas pequeñas, puede cambiar el mundo.</p>
+          <button type="button" class="pizarron__borrador" data-borrar aria-label="Otra frase del pizarrón"><i aria-hidden="true"></i></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DÓNDE ESTAMOS -->
+  <section class="donde sec" id="donde" aria-labelledby="donde-t">
+    <div class="wrap donde__grid">
+      <div class="donde__txt">
+        <header class="cab" data-r>
+          <p class="eti">Dónde estamos</p>
+          <h2 class="t2" id="donde-t">En la esquina de Jonte</h2>
+        </header>
+        <div class="placa" data-r aria-label="Av. Álvarez Jonte 2999"><span>2999</span></div>
+        <p class="donde__dir" data-r>Av. Álvarez Jonte 2999, esquina · Villa del Parque, CABA</p>
+        <div class="donde__estado" data-abierto-largo data-r><i></i><span>Abierto ahora</span></div>
+        <ul class="horas" data-horas data-r>
+          <li data-dia="lun"><span>Lunes</span><span>8 a 20</span></li>
+          <li data-dia="mar"><span>Martes</span><span>8 a 20</span></li>
+          <li data-dia="mie"><span>Miércoles</span><span>8 a 20</span></li>
+          <li data-dia="jue"><span>Jueves</span><span>8 a 20</span></li>
+          <li data-dia="vie"><span>Viernes</span><span>8 a 20</span></li>
+          <li data-dia="sab"><span>Sábado</span><span>9 a 20</span></li>
+          <li data-dia="dom"><span>Domingo</span><span>Cerrado</span></li>
+        </ul>
+        <div class="donde__datos" data-r>
+          <a class="dato" href="https://www.google.com/maps/search/?api=1&amp;query=Makia+Especialidad+Cafetera+Av.+%C3%81lvarez+Jonte+2999" target="_blank" rel="noopener"><b>4,6 ★</b><span>1.192 reseñas en Google</span></a>
+          <span class="dato"><b>Pet friendly</b><span>Los perris son bienvenidos</span></span>
+        </div>
+        <div class="donde__ctas" data-r>
+          <a class="btn btn--rojo" href="https://www.google.com/maps/dir/?api=1&amp;destination=Av.+%C3%81lvarez+Jonte+2999,+CABA" target="_blank" rel="noopener">Cómo llegar</a>
+          <a class="btn btn--linea" href="https://www.instagram.com/makia.cafe/" target="_blank" rel="noopener">Instagram</a>
+        </div>
+      </div>
+      <div class="donde__visual" data-r>
+        <figure class="donde__foto"><img src="img/g/230.webp" alt="El frente de Makia con el toldo a rayas" width="1080" height="1080" loading="lazy" decoding="async"></figure>
+        <div class="donde__mapa"><iframe title="Mapa de Makia en Av. Álvarez Jonte 2999" src="about:blank" data-src="https://www.google.com/maps?q=Av.+%C3%81lvarez+Jonte+2999,+Buenos+Aires&amp;z=16&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="pie">
+  <div class="pie__toldo" aria-hidden="true"><span class="toldo"></span></div>
+  <div class="wrap pie__grid">
+    <div class="pie__marca"><img src="img/logo-crema.svg" alt="Makia · Especialidad cafetera" width="344" height="540" loading="lazy"></div>
+    <div><h3>Visitanos</h3><p>Av. Álvarez Jonte 2999<br>Villa del Parque, CABA</p><p>Lun a vie de 8 a 20<br>Sábados de 9 a 20</p></div>
+    <div><h3>Pedí</h3><ul><li><a href="#carta">La carta</a></li><li><a href="#almuerzos">Almuerzos</a></li><li><a href="#grano">Café en grano</a></li><li><a href="#como">Cómo pedir</a></li></ul></div>
+    <div><h3>Seguinos</h3><ul><li><a href="https://www.instagram.com/makia.cafe/" target="_blank" rel="noopener">@makia.cafe</a></li><li><a href="https://wa.me/5491140449315" target="_blank" rel="noopener">WhatsApp</a></li><li><a href="admin/" target="_blank" rel="noopener">Panel del local</a></li></ul></div>
+  </div>
+  <div class="wrap pie__legal">
+    <p>© Makia · Especialidad Cafetera</p>
+    <p class="credito">Sitio desarrollado por <a href="https://alejomfernandez.com.ar" target="_blank" rel="noopener">Alejo Martín Fernández</a></p>
+  </div>
+</footer>
+
+<!-- confirmación: el ticket sale por la ventanilla -->
+<div class="tk" hidden>
+  <div class="tk__back" data-tk-cerrar></div>
+  <div class="tk__caja" role="dialog" aria-modal="true" aria-labelledby="tk-t">
+    <button type="button" class="tk__x" data-tk-cerrar aria-label="Cerrar">×</button>
+    <p class="eti eti--chica eti--crema tk__eti">Pedido confirmado</p>
+    <h2 class="tk__t" id="tk-t">Te esperamos en la ventanilla</h2>
+    <div class="tk__ventana">
+      <div class="tk__rendija"></div>
+      <div class="tk__papel">
+        <p class="tk__local">Makia · ventanilla</p>
+        <b class="tk__cod">#MK-000</b>
+        <p class="tk__cuando"></p>
+        <ul class="tk__items"></ul>
+        <p class="tk__pago"></p>
+      </div>
+    </div>
+    <p class="tk__sub"></p>
+    <div class="tk__ctas"><a class="btn btn--rojo" href="#" target="_blank" rel="noopener" data-tk-wa hidden>Abrir WhatsApp</a><button type="button" class="btn btn--crema" data-tk-cerrar>Listo</button></div>
+  </div>
+</div>
+
+<div class="lb" hidden>
+  <div class="lb__back" data-lb-cerrar></div>
+  <figure class="lb__caja" role="dialog" aria-modal="true" aria-label="Foto del plato">
+    <button type="button" class="tk__x" data-lb-cerrar aria-label="Cerrar">×</button>
+    <img alt="" width="900" height="900">
+    <figcaption></figcaption>
+  </figure>
+</div>
+
+<script type="module" src="js/makia.js?v=1"></script>
+</body>
+</html>

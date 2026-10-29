@@ -1,0 +1,777 @@
+{
+  "$schema": "https://raw.githubusercontent.com/AlejoMFernandez/kit-demos/main/docs/cliente.schema.json",
+  "id": "makia-cafe",
+  "nombre": "Makia",
+  "pais": "AR",
+  "idioma": "es",
+  "modo": "demo",
+  "whatsapp": "5491140449315",
+  "instagram": "makia.cafe",
+  "prefijoPedido": "MK",
+  "supabase": {
+    "url": "",
+    "anonKey": ""
+  },
+  "marca": {
+    "logo": "img/logo-negro.svg",
+    "logoPanel": "img/logo-crema.svg",
+    "favicon": "img/favicon.png",
+    "colores": {
+      "fondo": "#F6F3EC",
+      "superficie": "#FFFFFF",
+      "texto": "#141413",
+      "primario": "#C8281F",
+      "acento": "#157479",
+      "borde": "#D8D3C8"
+    },
+    "fuentes": {
+      "titulos": "'Antonio', 'Arial Narrow', sans-serif",
+      "texto": "'Instrument Sans', system-ui, sans-serif",
+      "googleFonts": ""
+    },
+    "estilo": {
+      "forma": "pildora",
+      "radio": "18px",
+      "sombra": "suave",
+      "borde": "1.5px",
+      "mayusculas": false
+    }
+  },
+  "modulos": {
+    "carta": true,
+    "carrito": true,
+    "reservas": false,
+    "admin": true
+  },
+  "horarios": {
+    "lun": [
+      [
+        "08:00",
+        "20:00"
+      ]
+    ],
+    "mar": [
+      [
+        "08:00",
+        "20:00"
+      ]
+    ],
+    "mie": [
+      [
+        "08:00",
+        "20:00"
+      ]
+    ],
+    "jue": [
+      [
+        "08:00",
+        "20:00"
+      ]
+    ],
+    "vie": [
+      [
+        "08:00",
+        "20:00"
+      ]
+    ],
+    "sab": [
+      [
+        "09:00",
+        "20:00"
+      ]
+    ],
+    "dom": []
+  },
+  "pedidos": {
+    "salidas": [
+      "mercadopago",
+      "efectivo",
+      "whatsapp"
+    ],
+    "tipos": [
+      "retiro"
+    ],
+    "retiroHoy": {
+      "cadaMin": 15,
+      "prepMin": 10,
+      "asap": true
+    },
+    "encargo": {
+      "anticipacionHoras": 48,
+      "diasAdelante": 14,
+      "franjas": [
+        {
+          "id": "manana",
+          "nombre": "Mañana",
+          "desde": "09:00",
+          "hasta": "13:00"
+        },
+        {
+          "id": "tarde",
+          "nombre": "Tarde",
+          "desde": "15:00",
+          "hasta": "20:00"
+        }
+      ]
+    },
+    "casillas": [
+      {
+        "id": "vaso",
+        "label": "Traigo mi vaso térmico",
+        "sub": "10% off en el café y los fríos · cuidamos el planeta",
+        "descuentoPct": 10,
+        "categorias": [
+          "cafe",
+          "frios"
+        ]
+      }
+    ]
+  },
+  "pagos": {
+    "mercadopago": {
+      "endpoint": "https://kit-demos-amf.vercel.app/api/mp-preference",
+      "modo": "sandbox"
+    }
+  },
+  "destacados": [
+    {
+      "id": "tolva",
+      "nombre": "En tolva",
+      "ayuda": "El café que está hoy en la tolva. Se ve en el inicio y en la sección del café en grano.",
+      "campos": [
+        {
+          "id": "origen",
+          "label": "Origen"
+        },
+        {
+          "id": "finca",
+          "label": "Finca, proceso y variedades"
+        },
+        {
+          "id": "notas",
+          "label": "Notas de sabor",
+          "largo": true
+        }
+      ],
+      "valores": {
+        "origen": "Perú · Amazonas",
+        "finca": "Finca Monteverde · lavado · Caturra, Typica, Bourbon",
+        "notas": "Aroma a caramelo, muy dulce y de acidez leve."
+      }
+    }
+  ],
+  "textos": {
+    "tuPedido": "Mi pedido",
+    "verPedido": "Mi pedido",
+    "agregar": "Sumar",
+    "carritoVacio": "Todavía no elegiste tu café.",
+    "carritoVacioSub": "Elegí algo de la carta y aparece acá.",
+    "enviarPedido": "Hacer el pedido",
+    "pedidoListo": "¡Te esperamos en la ventanilla!",
+    "porWhatsapp": "Lo confirmo por WhatsApp",
+    "porWhatsappSub": "Pagás al retirar"
+  },
+  "carta": {
+    "categorias": [
+      {
+        "id": "cafe",
+        "nombre": "Café"
+      },
+      {
+        "id": "frios",
+        "nombre": "Fríos"
+      },
+      {
+        "id": "entrepanes",
+        "nombre": "Almuerzos"
+      },
+      {
+        "id": "dulce",
+        "nombre": "Dulce"
+      },
+      {
+        "id": "grano",
+        "nombre": "Café en grano"
+      },
+      {
+        "id": "boxes",
+        "nombre": "Boxes de regalo",
+        "anticipacionHoras": 48
+      }
+    ],
+    "productos": [
+      {
+        "id": "espresso",
+        "categoria": "cafe",
+        "nombre": "Espresso",
+        "descripcion": "30 ml de la tolva.",
+        "precio": 3800,
+        "capas": [
+          [
+            "espresso",
+            40
+          ]
+        ]
+      },
+      {
+        "id": "doppio",
+        "categoria": "cafe",
+        "nombre": "Doppio",
+        "descripcion": "Doble espresso.",
+        "precio": 4500,
+        "capas": [
+          [
+            "espresso",
+            62
+          ]
+        ]
+      },
+      {
+        "id": "americano",
+        "categoria": "cafe",
+        "nombre": "Americano",
+        "descripcion": "Un espresso + agua.",
+        "precio": 4200,
+        "capas": [
+          [
+            "espresso",
+            30
+          ],
+          [
+            "agua",
+            52
+          ]
+        ]
+      },
+      {
+        "id": "macchiato",
+        "categoria": "cafe",
+        "nombre": "Espresso macchiato",
+        "descripcion": "Un espresso + leche emulsionada.",
+        "precio": 4200,
+        "capas": [
+          [
+            "espresso",
+            34
+          ],
+          [
+            "espuma",
+            18
+          ]
+        ]
+      },
+      {
+        "id": "latte-macchiato",
+        "categoria": "cafe",
+        "nombre": "Latte macchiato",
+        "descripcion": "Leche emulsionada + ristretto.",
+        "precio": 5200,
+        "capas": [
+          [
+            "leche",
+            44
+          ],
+          [
+            "espresso",
+            14
+          ],
+          [
+            "espuma",
+            24
+          ]
+        ]
+      },
+      {
+        "id": "latte",
+        "categoria": "cafe",
+        "nombre": "Latte o café con leche",
+        "descripcion": "Un espresso + leche emulsionada.",
+        "precio": 5000,
+        "capas": [
+          [
+            "espresso",
+            22
+          ],
+          [
+            "leche",
+            50
+          ],
+          [
+            "espuma",
+            12
+          ]
+        ]
+      },
+      {
+        "id": "flat-white",
+        "categoria": "cafe",
+        "nombre": "Flat white",
+        "descripcion": "Doble espresso + leche emulsionada.",
+        "precio": 5600,
+        "etiquetas": [
+          "casa"
+        ],
+        "capas": [
+          [
+            "espresso",
+            32
+          ],
+          [
+            "leche",
+            42
+          ],
+          [
+            "espuma",
+            8
+          ]
+        ]
+      },
+      {
+        "id": "capuccino",
+        "categoria": "cafe",
+        "nombre": "Capuccino",
+        "descripcion": "Un espresso + leche emulsionada.",
+        "precio": 5400,
+        "capas": [
+          [
+            "espresso",
+            26
+          ],
+          [
+            "leche",
+            32
+          ],
+          [
+            "espuma",
+            28
+          ]
+        ]
+      },
+      {
+        "id": "capuccino-choco",
+        "categoria": "cafe",
+        "nombre": "Capuccino con chocolate",
+        "descripcion": "Con crema y canela.",
+        "precio": 6200,
+        "capas": [
+          [
+            "chocolate",
+            12
+          ],
+          [
+            "espresso",
+            22
+          ],
+          [
+            "leche",
+            28
+          ],
+          [
+            "crema",
+            24
+          ]
+        ]
+      },
+      {
+        "id": "filtrado",
+        "categoria": "cafe",
+        "nombre": "Filtrado",
+        "descripcion": "Método de filtro con el café de la tolva.",
+        "precio": 5800,
+        "foto": "img/p/filtrado.webp",
+        "capas": [
+          [
+            "filtrado",
+            72
+          ]
+        ]
+      },
+      {
+        "id": "flat-frio",
+        "categoria": "frios",
+        "nombre": "Flat frío",
+        "descripcion": "Doble espresso, leche y hielo.",
+        "precio": 6200,
+        "foto": "img/p/flat-frio.webp"
+      },
+      {
+        "id": "ice-tonic",
+        "categoria": "frios",
+        "nombre": "Ice tonic",
+        "descripcion": "Espresso sobre tónica y hielo.",
+        "precio": 6800,
+        "foto": "img/p/ice-tonic.webp"
+      },
+      {
+        "id": "limonada",
+        "categoria": "frios",
+        "nombre": "Limonada",
+        "descripcion": "Siempre limonada.",
+        "precio": 5200,
+        "foto": "img/p/limonada.webp"
+      },
+      {
+        "id": "jugo-naranja",
+        "categoria": "frios",
+        "nombre": "Jugo de naranja",
+        "descripcion": "Exprimido.",
+        "precio": 4800
+      },
+      {
+        "id": "andes",
+        "categoria": "entrepanes",
+        "nombre": "Andes",
+        "descripcion": "Pechuga de pollo grillada, queso fundido, chutney de tomate y palta, en pan ciabatta.",
+        "precio": 11500,
+        "foto": "img/p/andes.webp",
+        "etiquetas": [
+          "casa"
+        ]
+      },
+      {
+        "id": "chimborazo",
+        "categoria": "entrepanes",
+        "nombre": "Chimborazo",
+        "descripcion": "Mayonesa de zanahoria, hamburguesa vegana, tomate, hojas verdes y aros de cebolla morada, en pan de hamburguesa vegano.",
+        "precio": 11800,
+        "foto": "img/p/chimborazo.webp",
+        "etiquetas": [
+          "veggie"
+        ]
+      },
+      {
+        "id": "genova",
+        "categoria": "entrepanes",
+        "nombre": "Génova",
+        "descripcion": "Berenjenas, calabaza y tomates salteados, paté de aceitunas negras, queso gratinado y espinaca fresca, en pan ciabatta.",
+        "precio": 11200,
+        "foto": "img/p/genova.webp",
+        "etiquetas": [
+          "veggie"
+        ]
+      },
+      {
+        "id": "comuna",
+        "categoria": "entrepanes",
+        "nombre": "Comuna",
+        "descripcion": "Pollo crocante, mozzarella y gratinado, en pan de molde.",
+        "precio": 11800,
+        "foto": "img/p/comuna.webp"
+      },
+      {
+        "id": "peregrino",
+        "categoria": "entrepanes",
+        "nombre": "El Peregrino",
+        "descripcion": "Con papas al costado.",
+        "precio": 11500,
+        "foto": "img/p/peregrino.webp"
+      },
+      {
+        "id": "tokio",
+        "categoria": "entrepanes",
+        "nombre": "Tokio",
+        "descripcion": "Queso crema con ciboulette, palta, tomate, cebolla morada y rúcula, en pan baguel.",
+        "precio": 11000,
+        "foto": "img/p/tokio.webp",
+        "etiquetas": [
+          "veggie"
+        ]
+      },
+      {
+        "id": "crainqueville",
+        "categoria": "entrepanes",
+        "nombre": "Crainqueville",
+        "descripcion": "Huevos revueltos, cheddar y panceta, en pan de molde de masa madre.",
+        "precio": 10800
+      },
+      {
+        "id": "tobas",
+        "categoria": "entrepanes",
+        "nombre": "Tobas",
+        "descripcion": "Bondiola a la cerveza negra, chutney, queso gratinado y coleslaw.",
+        "precio": 12200
+      },
+      {
+        "id": "litoral",
+        "categoria": "entrepanes",
+        "nombre": "Litoral",
+        "descripcion": "Jamón crudo, queso en fetas, rúcula, tomates secos y aceitunas negras, en pan baguetín.",
+        "precio": 11600
+      },
+      {
+        "id": "croissant-rucula",
+        "categoria": "entrepanes",
+        "nombre": "Croissant de rúcula, pera y roquefort",
+        "descripcion": "Croissant relleno.",
+        "precio": 9800,
+        "foto": "img/p/croissant-rucula.webp"
+      },
+      {
+        "id": "ensalada",
+        "categoria": "entrepanes",
+        "nombre": "Ensalada de hojas verdes",
+        "descripcion": "Morrones, queso y nueces.",
+        "precio": 9500,
+        "foto": "img/p/ensalada.webp",
+        "etiquetas": [
+          "veggie"
+        ]
+      },
+      {
+        "id": "sopa",
+        "categoria": "entrepanes",
+        "nombre": "Sopa del día",
+        "descripcion": "Cambia cada día: preguntanos cuál hay hoy.",
+        "precio": 8500,
+        "foto": "img/p/sopa.webp"
+      },
+      {
+        "id": "croissant",
+        "categoria": "dulce",
+        "nombre": "Croissant",
+        "descripcion": "De manteca.",
+        "precio": 3600,
+        "foto": "img/p/croissant.webp"
+      },
+      {
+        "id": "pan-chocolate",
+        "categoria": "dulce",
+        "nombre": "Pan de chocolate",
+        "descripcion": "",
+        "precio": 4200,
+        "foto": "img/p/pan-chocolate.webp"
+      },
+      {
+        "id": "roll-canela",
+        "categoria": "dulce",
+        "nombre": "Roll de canela",
+        "descripcion": "",
+        "precio": 4200,
+        "foto": "img/p/roll-canela.webp"
+      },
+      {
+        "id": "cookies",
+        "categoria": "dulce",
+        "nombre": "Cookies",
+        "descripcion": "Las de la campana.",
+        "precio": 3200,
+        "foto": "img/p/cookies.webp"
+      },
+      {
+        "id": "budin",
+        "categoria": "dulce",
+        "nombre": "Porción de budín",
+        "descripcion": "",
+        "precio": 3800,
+        "foto": "img/p/budin.webp"
+      },
+      {
+        "id": "red-velvet",
+        "categoria": "dulce",
+        "nombre": "Red velvet",
+        "descripcion": "Porción.",
+        "precio": 6800,
+        "foto": "img/p/red-velvet.webp"
+      },
+      {
+        "id": "carrot",
+        "categoria": "dulce",
+        "nombre": "Carrot cake",
+        "descripcion": "Porción.",
+        "precio": 6800,
+        "foto": "img/p/carrot.webp"
+      },
+      {
+        "id": "tarta-frutos",
+        "categoria": "dulce",
+        "nombre": "Tarta de frutos rojos",
+        "descripcion": "Porción.",
+        "precio": 6900,
+        "foto": "img/p/tarta-frutos.webp"
+      },
+      {
+        "id": "yogurt",
+        "categoria": "dulce",
+        "nombre": "Yogurt con granola",
+        "descripcion": "Yogurt natural, granola casera, frutas de estación y miel.",
+        "precio": 7200,
+        "foto": "img/p/yogurt.webp"
+      },
+      {
+        "id": "grano-tolva",
+        "categoria": "grano",
+        "nombre": "El de la tolva",
+        "descripcion": "El café que estamos sirviendo esta semana, de Puerto Blest.",
+        "precio": null,
+        "foto": "img/p/grano-tolva.webp",
+        "variantes": [
+          {
+            "id": "q",
+            "nombre": "¼ kg",
+            "precio": 12500
+          },
+          {
+            "id": "m",
+            "nombre": "½ kg",
+            "precio": 24000
+          },
+          {
+            "id": "k",
+            "nombre": "1 kg",
+            "precio": 46000
+          }
+        ],
+        "opciones": [
+          {
+            "id": "molienda",
+            "nombre": "Molienda",
+            "valores": [
+              {
+                "id": "grano",
+                "nombre": "En grano"
+              },
+              {
+                "id": "espresso",
+                "nombre": "Para espresso"
+              },
+              {
+                "id": "moka",
+                "nombre": "Para moka"
+              },
+              {
+                "id": "filtro",
+                "nombre": "Para filtro"
+              },
+              {
+                "id": "prensa",
+                "nombre": "Prensa francesa"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "grano-colombia",
+        "categoria": "grano",
+        "nombre": "Colombia · Cartago, Nariño",
+        "descripcion": "Puerto Blest · origen.",
+        "precio": null,
+        "foto": "img/p/grano-colombia.webp",
+        "variantes": [
+          {
+            "id": "q",
+            "nombre": "¼ kg",
+            "precio": 12500
+          },
+          {
+            "id": "m",
+            "nombre": "½ kg",
+            "precio": 24000
+          },
+          {
+            "id": "k",
+            "nombre": "1 kg",
+            "precio": 46000
+          }
+        ],
+        "opciones": [
+          {
+            "id": "molienda",
+            "nombre": "Molienda",
+            "valores": [
+              {
+                "id": "grano",
+                "nombre": "En grano"
+              },
+              {
+                "id": "espresso",
+                "nombre": "Para espresso"
+              },
+              {
+                "id": "moka",
+                "nombre": "Para moka"
+              },
+              {
+                "id": "filtro",
+                "nombre": "Para filtro"
+              },
+              {
+                "id": "prensa",
+                "nombre": "Prensa francesa"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "grano-guatemala",
+        "categoria": "grano",
+        "nombre": "Guatemala · Huehuetenango",
+        "descripcion": "Puerto Blest · origen.",
+        "precio": null,
+        "foto": "img/p/grano-guatemala.webp",
+        "variantes": [
+          {
+            "id": "q",
+            "nombre": "¼ kg",
+            "precio": 13500
+          },
+          {
+            "id": "m",
+            "nombre": "½ kg",
+            "precio": 26000
+          },
+          {
+            "id": "k",
+            "nombre": "1 kg",
+            "precio": 50000
+          }
+        ],
+        "opciones": [
+          {
+            "id": "molienda",
+            "nombre": "Molienda",
+            "valores": [
+              {
+                "id": "grano",
+                "nombre": "En grano"
+              },
+              {
+                "id": "espresso",
+                "nombre": "Para espresso"
+              },
+              {
+                "id": "moka",
+                "nombre": "Para moka"
+              },
+              {
+                "id": "filtro",
+                "nombre": "Para filtro"
+              },
+              {
+                "id": "prensa",
+                "nombre": "Prensa francesa"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "box-cafe",
+        "categoria": "boxes",
+        "nombre": "Box café",
+        "descripcion": "¼ de café Puerto Blest molido a tu método, jarro mug, bombones artesanales, pasta frola o coco y dulce de leche y tarjeta para tu mensaje.",
+        "precio": 32000,
+        "foto": "img/p/box-cafe.webp"
+      },
+      {
+        "id": "box-desayuno",
+        "categoria": "boxes",
+        "nombre": "Box desayuno",
+        "descripcion": "Jugo de naranja, 2 medialunas, porción de budín, brownie, scones de queso y más.",
+        "precio": 28000,
+        "foto": "img/p/box-desayuno.webp"
+      }
+    ]
+  }
+}

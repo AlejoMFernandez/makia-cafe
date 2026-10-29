@@ -1,0 +1,4 @@
+/* Panel de Makia: la barra va en negro "Toldo", como el logo (el rojo queda para las acciones) */
+.kad-top { background: #141413; color: #F6F3EC; }
+@media (min-width: 900px) { .kad-nav__a.is-on { color: #F6F3EC; border-bottom-color: #C69249; } }
+.kad-brand img { max-height: 42px; width: auto; }
